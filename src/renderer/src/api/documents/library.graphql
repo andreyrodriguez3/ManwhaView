@@ -1,0 +1,52 @@
+query LibraryManga {
+  mangas(filter: { inLibrary: { equalTo: true } }, order: [{ by: TITLE, byType: ASC }]) {
+    nodes {
+      ...MangaCard
+      lastReadChapter {
+        id
+        lastReadAt
+      }
+      firstUnreadChapter {
+        id
+      }
+      categories {
+        nodes {
+          id
+        }
+      }
+    }
+  }
+}
+
+query Categories {
+  categories(order: [{ by: ORDER, byType: ASC }]) {
+    nodes {
+      id
+      name
+      order
+      isDefaultCategory
+    }
+  }
+}
+
+mutation UpdateLibrary {
+  updateLibrary(input: {}) {
+    updateStatus {
+      jobsInfo {
+        isRunning
+        totalJobs
+        finishedJobs
+      }
+    }
+  }
+}
+
+query LibraryUpdateStatus {
+  libraryUpdateStatus {
+    jobsInfo {
+      isRunning
+      totalJobs
+      finishedJobs
+    }
+  }
+}

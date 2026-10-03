@@ -175,7 +175,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - Botones "Añadir/Quitar de biblioteca", "Continuar/Empezar" y "Abrir en el navegador".
   - Al abrir el detalle, pide a la fuente los datos y capítulos actualizados.
 
-### [ ] Fase 5: Biblioteca
+### [x] Fase 5: Biblioteca
 - Cuadrícula de portadas con un número de capítulos sin leer.
 - Pestañas por categoría (vienen del backup de Mihon), un filtro de texto y orden por: última lectura, sin leer o A-Z.
 - Clic en una portada abre el detalle. Botón **Continuar** en cada tarjeta (al pasar el ratón) que abre directo el siguiente capítulo sin leer.
