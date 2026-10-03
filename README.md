@@ -22,6 +22,12 @@ Estado: v0.1 completa (fases 0-10 de `PLAN.md`).
 - Atajos globales (configurables en Ajustes): `Ctrl+Alt+M` mostrar/ocultar, `G` fantasma, `P` fijar,
   `↑`/`↓` scroll, `Espacio` auto-scroll. Si otra aplicación ya usa uno, Ajustes lo avisa y puedes cambiarlo.
 
+## Historial
+
+Pestaña **Historial**: lo último que leíste, una fila por obra y agrupado por día, como en Mihon. Toca una fila para seguir leyendo,
+♡ la añade a la biblioteca y 🗑 la quita del historial (solo de esta app; el progreso no se toca). El historial sale del motor, así que lo
+que importes con una copia de seguridad de Mihon aparece aquí.
+
 ## Contenido +18
 
 Ajustes → Contenido → **Ocultar contenido +18** oculta las fuentes y extensiones marcadas +18 y las obras con géneros adultos.

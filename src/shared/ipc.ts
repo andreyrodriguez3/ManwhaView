@@ -79,6 +79,8 @@ export interface Settings {
   shortcuts: Record<ShortcutAction, string>
   app: { trayHintShown: boolean }
   content: { hideAdult: boolean; hideMixed: boolean }
+  /** Entradas del historial quitadas por el usuario: id de capítulo → su lastReadAt en ese momento. */
+  history: { hidden: Record<string, number> }
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -93,7 +95,8 @@ export const DEFAULT_SETTINGS: Settings = {
     toggleAutoScroll: 'Ctrl+Alt+Space'
   },
   app: { trayHintShown: false },
-  content: { hideAdult: false, hideMixed: false }
+  content: { hideAdult: false, hideMixed: false },
+  history: { hidden: {} }
 }
 
 /** Estado de la ventana flotante que muestra la interfaz. */

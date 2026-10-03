@@ -103,6 +103,7 @@ export default function Reader({
       // Refresca las pantallas que muestran el progreso.
       setTimeout(() => {
         void qc.invalidateQueries({ queryKey: ['library'] })
+        void qc.invalidateQueries({ queryKey: ['history'] })
         void qc.invalidateQueries({ queryKey: ['chapters', mangaId] })
         void qc.invalidateQueries({ queryKey: ['manga', mangaId] })
       }, 500)

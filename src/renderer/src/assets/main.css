@@ -557,3 +557,21 @@ button.icon.close:hover {
 .reader-bar button {
   font-size: 12px;
 }
+.day-label {
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.hist-cover {
+  width: 48px;
+  height: 68px;
+  flex: none;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #0003;
+}
+.ext .icon {
+  height: 2.2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}

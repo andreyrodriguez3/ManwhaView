@@ -1,0 +1,22 @@
+query History {
+  chapters(
+    filter: { lastReadAt: { greaterThan: "0" } }
+    order: [{ by: LAST_READ_AT, byType: DESC }]
+    first: 300
+  ) {
+    nodes {
+      id
+      name
+      chapterNumber
+      lastReadAt
+      isRead
+      mangaId
+      manga {
+        id
+        title
+        thumbnailUrl
+        inLibrary
+      }
+    }
+  }
+}

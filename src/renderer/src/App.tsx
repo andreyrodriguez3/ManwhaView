@@ -6,6 +6,7 @@ import TitleBar from './components/TitleBar'
 import { useWin } from './store/win'
 import { baseTab, useNav, type TabName, type View } from './store/nav'
 import Browse from './routes/Browse'
+import History from './routes/History'
 import Extensions from './routes/Extensions'
 import Manga from './routes/Manga'
 import Search from './routes/Search'
@@ -24,6 +25,8 @@ function Screen({
   switch (view.name) {
     case 'library':
       return <Library />
+    case 'history':
+      return <History />
     case 'browse':
       return <Browse />
     case 'search':
@@ -100,6 +103,7 @@ function App(): React.JSX.Element {
 
   const tabs: [TabName, string][] = [
     ['library', 'Biblioteca'],
+    ['history', 'Historial'],
     ['browse', 'Explorar'],
     ['extensions', 'Extensiones'],
     ['settings', 'Ajustes']

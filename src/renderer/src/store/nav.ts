@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 export type View =
   | { name: 'library' }
+  | { name: 'history' }
   | { name: 'browse' }
   | { name: 'search'; query: string }
   | { name: 'source'; sourceId: string; sourceName: string; supportsLatest: boolean }
@@ -11,7 +12,7 @@ export type View =
   | { name: 'settings' }
 
 /** Pestañas de primer nivel: al cambiar de una a otra se reinicia el historial. */
-export type TabName = 'library' | 'browse' | 'extensions' | 'settings'
+export type TabName = 'library' | 'history' | 'browse' | 'extensions' | 'settings'
 
 interface Nav {
   stack: View[]
@@ -39,5 +40,11 @@ export const useNav = create<Nav>((set) => ({
 /** Pestaña de primer nivel a la que pertenece la vista actual (la base del historial). */
 export const baseTab = (stack: View[]): TabName => {
   const n = stack[0].name
-  return n === 'library' || n === 'browse' || n === 'extensions' || n === 'settings' ? n : 'library'
+  return n === 'library' ||
+    n === 'history' ||
+    n === 'browse' ||
+    n === 'extensions' ||
+    n === 'settings'
+    ? n
+    : 'library'
 }

@@ -12,7 +12,8 @@ export function getSettings(): Settings {
     reader: { ...DEFAULT_SETTINGS.reader, ...s.reader },
     shortcuts: { ...DEFAULT_SETTINGS.shortcuts, ...s.shortcuts },
     app: { ...DEFAULT_SETTINGS.app, ...s.app },
-    content: { ...DEFAULT_SETTINGS.content, ...s.content }
+    content: { ...DEFAULT_SETTINGS.content, ...s.content },
+    history: { ...DEFAULT_SETTINGS.history, ...s.history }
   }
 }
 
