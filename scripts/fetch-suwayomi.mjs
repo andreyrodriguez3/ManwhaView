@@ -40,8 +40,13 @@ if (!res.ok || !res.body) throw new Error(`Descarga fallida: ${res.status}`)
 await pipeline(Readable.fromWeb(res.body), createWriteStream(archive))
 
 console.log('Descomprimiendo…')
-// tar de Windows 10+ (bsdtar) también lee .zip
-execFileSync('tar', ['-xf', archive, '-C', work])
+// tar de Windows 10+ (bsdtar) también lee .zip. Se usa la ruta absoluta porque, si el script se
+// lanza desde Git Bash, `tar` es el de GNU y toma "C:" como un host remoto.
+const tar =
+  process.platform === 'win32'
+    ? join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe')
+    : 'tar'
+execFileSync(tar, ['-xf', archive, '-C', work])
 const inner = join(work, NAME.replace(`.${EXT}`, ''))
 if (!existsSync(join(inner, 'bin', 'Suwayomi-Server.jar')))
   throw new Error('Estructura inesperada del archivo descargado')
