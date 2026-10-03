@@ -1,6 +1,14 @@
 # ManwhaView
 
-Biblioteca personal de manhwas: estado, progreso, puntuación, notas y un lector básico.
-Web estática; los datos se guardan en tu navegador (localStorage) y se pueden exportar/importar como JSON.
+Un "Mihon de escritorio": lector de manhwa/manga para Windows que se queda flotando encima de lo que estés haciendo.
+Usa [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) como motor, así que funcionan las mismas extensiones que en Mihon.
 
-Abre `index.html` o publícalo con GitHub Pages (workflow incluido).
+Estado: en desarrollo. Mira `PLAN.md` para las fases.
+
+## Desarrollo
+
+```
+npm install
+npm run fetch-suwayomi   # descarga el motor (una vez)
+npm run dev
+```

@@ -76,7 +76,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 
 ## Fases
 
-### [ ] Fase 0: Limpieza y base
+### [x] Fase 0: Limpieza y base
 - Borra el prototipo anterior: `index.html`, `style.css`, `app.js` y `.github/workflows/pages.yml`.
 - Crea el proyecto con electron-vite (plantilla react-ts). Añade ESLint, Prettier y `.gitignore` (node_modules, out, dist, resources/suwayomi).
 - Crea `CLAUDE.md` con: los comandos (`npm run dev`, `build`, `lint`, `typecheck`, `dist`), la estructura, el enlace a este PLAN y las reglas:
@@ -86,7 +86,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - Actualiza `README.md`.
 - **Listo cuando:** `npm run dev` abre una ventana con "ManwhaView" y pasan `lint` y `typecheck`.
 
-### [ ] Fase 1: Suwayomi como proceso hijo
+### [x] Fase 1: Suwayomi como proceso hijo
 - `scripts/fetch-suwayomi.mjs`:
   - Descarga una **versión fija** (constante en el script) del release de Suwayomi-Server para Windows x64 que trae Java.
   - Lo descomprime en `resources/suwayomi/`. Si ya existe, no hace nada.
@@ -94,7 +94,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - `src/main/suwayomi.ts`:
   - Busca un puerto libre, empezando por el 4567.
   - Usa como directorio raíz de datos `app.getPath('userData')/suwayomi`.
-  - Antes de arrancar, escribe o ajusta `server.conf` con estos valores. Comprueba sus nombres exactos en la documentación de esa versión:
+  - (Implementado) En vez de editar `server.conf`, pasa los ajustes como propiedades Java `-Dsuwayomi.tachidesk.config.server.<ajuste>=<valor>`:
     - `server.ip = "127.0.0.1"` y el puerto elegido.
     - Bandeja de Suwayomi desactivada.
     - No abrir el navegador al arrancar.
@@ -107,14 +107,16 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - Interfaz: pantalla "Iniciando motor…" con spinner. Si falla, muestra el error, un botón "Reintentar" y la ruta del log.
 - **Listo cuando:** al abrir la app se ve la versión de Suwayomi en la interfaz, y al cerrarla no queda ningún `java.exe` vivo.
 
-### [ ] Fase 2: Cliente GraphQL tipado
+### [x] Fase 2: Cliente GraphQL tipado
 - `npm run schema`: descarga el esquema del servidor en marcha a `schema.graphql` y lo versiona en git.
 - graphql-codegen (client preset) genera los tipos y las consultas tipadas en `src/renderer/src/api/gql/`.
 - El cliente apunta a la URL que da el proceso principal por IPC (`api.getServerUrl()`).
 - Las imágenes (portadas, páginas) se cargan con la URL absoluta del servidor + la ruta que devuelve la API.
 - **Regla:** toda consulta o mutación se escribe según `schema.graphql`. Si algo no existe en el esquema, no se inventa.
 
-### [ ] Fase 3: Extensiones
+### [x] Fase 3: Extensiones
+> Nota: en Suwayomi v2.4 `extensionRepos` está obsoleto; se usan las mutaciones `addExtensionStore`/`removeExtensionStore` y después `fetchExtensions`. Se acepta `index.pb`.
+> **Pendiente de probar en Windows:** instalar de verdad Olympus/ManhwaWeb/Webtoons (en la sesión de desarrollo la red bloqueó la descarga del repositorio).
 - Ajustes → "Repositorios de extensiones": un campo para pegar la URL del repo (la misma que usa el usuario en Mihon) y guardarla en los ajustes del servidor.
 - Pantalla Extensiones:
   - Botón para refrescar la lista.

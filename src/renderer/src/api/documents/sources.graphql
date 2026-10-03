@@ -1,0 +1,11 @@
+query Sources {
+  sources(order: [{ by: NAME }]) {
+    nodes {
+      id
+      name
+      lang
+      iconUrl
+      supportsLatest
+    }
+  }
+}

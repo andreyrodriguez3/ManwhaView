@@ -1,0 +1,27 @@
+query ExtensionStores {
+  extensionStores {
+    nodes {
+      name
+      badgeLabel
+      indexUrl
+      isLegacy
+    }
+  }
+}
+
+mutation AddExtensionStore($indexUrl: String!) {
+  addExtensionStore(input: { indexUrl: $indexUrl }) {
+    extensionStore {
+      name
+      indexUrl
+    }
+  }
+}
+
+mutation RemoveExtensionStore($indexUrl: String!) {
+  removeExtensionStore(input: { indexUrl: $indexUrl }) {
+    extensionStore {
+      indexUrl
+    }
+  }
+}

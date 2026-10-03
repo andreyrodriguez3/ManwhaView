@@ -1,0 +1,6 @@
+query AboutServer {
+  aboutServer {
+    name
+    version
+  }
+}

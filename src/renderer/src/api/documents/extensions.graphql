@@ -1,0 +1,37 @@
+fragment ExtensionFields on ExtensionType {
+  pkgName
+  name
+  lang
+  iconUrl
+  versionName
+  isInstalled
+  hasUpdate
+  isObsolete
+  contentWarning
+  storeIndexUrl
+}
+
+query Extensions {
+  extensions(order: [{ by: NAME }]) {
+    totalCount
+    nodes {
+      ...ExtensionFields
+    }
+  }
+}
+
+mutation FetchExtensions {
+  fetchExtensions(input: {}) {
+    extensions {
+      ...ExtensionFields
+    }
+  }
+}
+
+mutation UpdateExtension($id: String!, $patch: UpdateExtensionPatchInput!) {
+  updateExtension(input: { id: $id, patch: $patch }) {
+    extension {
+      ...ExtensionFields
+    }
+  }
+}
