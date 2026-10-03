@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { gql, serverAsset } from '../api/client'
 import { SourcesDocument } from '../api/gql/graphql'
+import { useIsBlocked } from '../lib/adult'
 import { LANGS, type Lang } from '../lib/lang'
 import { useNav } from '../store/nav'
 
@@ -9,9 +10,10 @@ export default function Browse(): React.JSX.Element {
   const go = useNav((s) => s.go)
   const [text, setText] = useState('')
   const [lang, setLang] = useState<Lang>('es-en')
+  const isBlocked = useIsBlocked()
   const sources = useQuery({ queryKey: ['sources'], queryFn: () => gql(SourcesDocument) })
   const nodes = (sources.data?.sources.nodes ?? []).filter(
-    (s) => s.id !== '0' && LANGS[lang].match(s.lang)
+    (s) => s.id !== '0' && LANGS[lang].match(s.lang) && !isBlocked(s.contentWarning)
   )
 
   return (

@@ -5,6 +5,7 @@ fragment MangaCard on MangaType {
   inLibrary
   sourceId
   unreadCount
+  genre
 }
 
 fragment ChapterFields on ChapterType {

@@ -4,6 +4,7 @@ import { gql } from '../api/client'
 import { FetchSourceMangaDocument } from '../api/gql/graphql'
 import MangaCard from '../components/MangaCard'
 import { useSentinel } from '../hooks/useSentinel'
+import { isAdultManga, useHideAdult } from '../lib/adult'
 import { useNav } from '../store/nav'
 
 type Mode = 'POPULAR' | 'LATEST' | 'SEARCH'
@@ -18,6 +19,7 @@ export default function Source({
   supportsLatest: boolean
 }): React.JSX.Element {
   const go = useNav((s) => s.go)
+  const hideAdult = useHideAdult()
   const [mode, setMode] = useState<Mode>('POPULAR')
   const [text, setText] = useState('')
   const [query, setQuery] = useState('')
@@ -50,6 +52,7 @@ export default function Source({
   const mangas = (list.data?.pages ?? [])
     .flatMap((p) => p.mangas)
     .filter((m) => !seen.has(m.id) && !!seen.add(m.id))
+    .filter((m) => !(hideAdult && isAdultManga(m.genre)))
 
   const tabs: [Mode, string][] = [['POPULAR', 'Populares']]
   if (supportsLatest) tabs.push(['LATEST', 'Recientes'])

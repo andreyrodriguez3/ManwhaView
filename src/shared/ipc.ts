@@ -78,6 +78,7 @@ export interface Settings {
   }
   shortcuts: Record<ShortcutAction, string>
   app: { trayHintShown: boolean }
+  content: { hideAdult: boolean; hideMixed: boolean }
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -91,7 +92,8 @@ export const DEFAULT_SETTINGS: Settings = {
     scrollDown: 'Ctrl+Alt+Down',
     toggleAutoScroll: 'Ctrl+Alt+Space'
   },
-  app: { trayHintShown: false }
+  app: { trayHintShown: false },
+  content: { hideAdult: false, hideMixed: false }
 }
 
 /** Estado de la ventana flotante que muestra la interfaz. */

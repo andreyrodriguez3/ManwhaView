@@ -22,6 +22,11 @@ Estado: v0.1 completa (fases 0-10 de `PLAN.md`).
 - Atajos globales (configurables en Ajustes): `Ctrl+Alt+M` mostrar/ocultar, `G` fantasma, `P` fijar,
   `↑`/`↓` scroll, `Espacio` auto-scroll. Si otra aplicación ya usa uno, Ajustes lo avisa y puedes cambiarlo.
 
+## Contenido +18
+
+Ajustes → Contenido → **Ocultar contenido +18** oculta las fuentes y extensiones marcadas +18 y las obras con géneros adultos.
+Las fuentes «mixtas» pueden traer obras +18 sin marcar; la segunda casilla las oculta por completo. Está desactivado por defecto.
+
 ## Seguimiento (AniList, MyAnimeList…)
 
 Ajustes → Seguimiento → **Iniciar sesión**: se abre tu navegador para autorizar y luego pegas aquí la URL a la que te

@@ -11,7 +11,8 @@ export function getSettings(): Settings {
     window: { ...DEFAULT_SETTINGS.window, ...s.window },
     reader: { ...DEFAULT_SETTINGS.reader, ...s.reader },
     shortcuts: { ...DEFAULT_SETTINGS.shortcuts, ...s.shortcuts },
-    app: { ...DEFAULT_SETTINGS.app, ...s.app }
+    app: { ...DEFAULT_SETTINGS.app, ...s.app },
+    content: { ...DEFAULT_SETTINGS.content, ...s.content }
   }
 }
 

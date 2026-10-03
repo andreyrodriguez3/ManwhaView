@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { gql, serverAsset } from '../api/client'
+import { useIsBlocked } from '../lib/adult'
 import { LANGS, type Lang } from '../lib/lang'
 import {
   ExtensionsDocument,
@@ -17,6 +18,7 @@ export default function Extensions(): React.JSX.Element {
   const [lang, setLang] = useState<Lang>('es-en')
   const [status, setStatus] = useState<Status>('all')
   const [text, setText] = useState('')
+  const isBlocked = useIsBlocked()
 
   const list = useQuery({ queryKey: ['extensions'], queryFn: () => gql(ExtensionsDocument) })
   const sources = useQuery({ queryKey: ['sources'], queryFn: () => gql(SourcesDocument) })
@@ -41,6 +43,7 @@ export default function Extensions(): React.JSX.Element {
     return (list.data?.extensions.nodes ?? []).filter(
       (e) =>
         !e.isObsolete &&
+        !isBlocked(e.contentWarning) &&
         LANGS[lang].match(e.lang) &&
         (!q || e.name.toLowerCase().includes(q)) &&
         (status === 'all' ||
@@ -48,7 +51,7 @@ export default function Extensions(): React.JSX.Element {
           (status === 'updates' && e.hasUpdate) ||
           (status === 'available' && !e.isInstalled))
     )
-  }, [list.data, lang, status, text])
+  }, [list.data, lang, status, text, isBlocked])
 
   const busy = act.isPending ? act.variables?.id : undefined
   const error = (refresh.error ?? act.error ?? list.error) as Error | null

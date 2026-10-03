@@ -4,6 +4,7 @@ import { gql } from '../api/client'
 import { SourcesDocument } from '../api/gql/graphql'
 import MangaCard from '../components/MangaCard'
 import { useGlobalSearch } from '../hooks/useGlobalSearch'
+import { isAdultManga, useHideAdult, useIsBlocked } from '../lib/adult'
 import { useNav } from '../store/nav'
 
 const STORAGE_KEY = 'search.sources'
@@ -24,11 +25,17 @@ export default function Search({ query }: { query: string }): React.JSX.Element 
   const go = useNav((s) => s.go)
   const [picked, setPicked] = useState<string[] | null>(loadSelection)
   const [pickerOpen, setPickerOpen] = useState(false)
+  const hideAdult = useHideAdult()
+  const isBlocked = useIsBlocked()
   const sources = useQuery({ queryKey: ['sources'], queryFn: () => gql(SourcesDocument) })
 
   const all = useMemo(
-    () => (sources.data?.sources.nodes ?? []).filter((s) => s.id !== '0'),
-    [sources.data]
+    () =>
+      (sources.data?.sources.nodes ?? []).filter(
+        (s) => s.id !== '0' && !isBlocked(s.contentWarning)
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sources.data, hideAdult, isBlocked]
   )
   // Por defecto: las fuentes instaladas en español e inglés.
   const selected = useMemo(
@@ -40,6 +47,9 @@ export default function Search({ query }: { query: string }): React.JSX.Element 
     query,
     selected.map((s) => s.id)
   )
+
+  const visible = <T extends { genre: string[] }>(list: T[]): T[] =>
+    hideAdult ? list.filter((m) => !isAdultManga(m.genre)) : list
 
   const toggle = (id: string): void => {
     const current = picked ?? selected.map((s) => s.id)
@@ -88,12 +98,12 @@ export default function Search({ query }: { query: string }): React.JSX.Element 
             </h3>
             {row.status === 'loading' && <p className="muted small">Buscando…</p>}
             {row.status === 'error' && <p className="error small">{row.message}</p>}
-            {row.status === 'done' && row.mangas.length === 0 && (
+            {row.status === 'done' && visible(row.mangas).length === 0 && (
               <p className="muted small">Sin resultados.</p>
             )}
-            {row.status === 'done' && row.mangas.length > 0 && (
+            {row.status === 'done' && visible(row.mangas).length > 0 && (
               <div className="hrow">
-                {row.mangas.map((m) => (
+                {visible(row.mangas).map((m) => (
                   <MangaCard
                     key={m.id}
                     title={m.title}

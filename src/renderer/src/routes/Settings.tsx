@@ -26,6 +26,8 @@ export default function Settings({
     void window.api.app.getLogin().then(setLogin)
   }, [])
   const ghostOpacity = useSettings((s) => s.settings.window.ghostOpacity)
+  const hideAdult = useSettings((s) => s.settings.content.hideAdult)
+  const hideMixed = useSettings((s) => s.settings.content.hideMixed)
   const [url, setUrl] = useState(DEFAULT_EXTENSION_STORE)
   const stores = useQuery({ queryKey: ['stores'], queryFn: () => gql(ExtensionStoresDocument) })
 
@@ -99,6 +101,30 @@ export default function Settings({
           Salir de ManwhaView (cierra también el motor)
         </button>
       </div>
+
+      <h3>Contenido</h3>
+      <label className="shortcut-row">
+        <input
+          type="checkbox"
+          checked={hideAdult}
+          onChange={(e) => patchSettings('content', { hideAdult: e.target.checked })}
+        />
+        <span className="label">Ocultar contenido +18</span>
+      </label>
+      <label className="shortcut-row">
+        <input
+          type="checkbox"
+          checked={hideMixed}
+          disabled={!hideAdult}
+          onChange={(e) => patchSettings('content', { hideMixed: e.target.checked })}
+        />
+        <span className="label">Ocultar también las fuentes «mixtas»</span>
+      </label>
+      <p className="muted small">
+        Oculta las fuentes y extensiones marcadas como +18 y las obras con géneros adultos (adult,
+        hentai, smut, erotica…). Las fuentes «mixtas» mezclan obras normales y +18 y no siempre las
+        marcan: la segunda opción las oculta por completo.
+      </p>
 
       <h3>Ventana</h3>
       <div className="shortcut-row">
