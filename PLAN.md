@@ -4,6 +4,41 @@
 > Trabaja **una fase por sesión**, en Claude Desktop (local), sobre Windows.
 > Al terminar una fase: marca su casilla, haz commit y push.
 
+## Estado actual y traspaso (léelo primero)
+
+**Hecho:** fases 0 a 3, escritas en una sesión en la nube (Linux). Todo compila, `typecheck` y `lint` pasan, y la app se ejecutó
+de verdad con un Suwayomi de Linux (arranca el motor, muestra la versión, las pantallas cargan y los errores se ven).
+
+**Sin probar (hazlo primero en Windows, antes de empezar la Fase 4):**
+1. `npm install`, `npm run fetch-suwayomi` y `npm run dev`: debe verse "Iniciando motor…" y luego "Motor v2.4.2366".
+   El script descarga `Suwayomi-Server-v2.4.2366-windows-x64.zip` y usa `tar` para descomprimirlo (en Windows 10+ viene incluido).
+2. Ajustes → Añadir (el repo de Keiyoushi ya viene puesto) → pestaña Extensiones → "Refrescar lista" → instalar Olympus Scans, ManhwaWeb y Webtoons.
+   En la nube la red bloqueó la descarga del repositorio (error 403 del motor), así que **esto no se ha probado nunca**.
+3. Cerrar la app y comprobar en el Administrador de tareas que no queda ningún `java.exe` (se usa `taskkill /T /F`; no probado en Windows).
+4. Si algo falla, el registro del motor está en `%APPDATA%/manwhaview/logs/suwayomi.log` (botón "Ver registro" en la app).
+   Corrige el fallo antes de seguir. Si algo requiere cambiar este plan, cámbialo aquí.
+
+**Datos fijos del entorno del usuario:**
+- Repo de extensiones (el mismo de Mihon): `https://github.com/keiyoushi/extensions/raw/repo/index.pb` (constante `DEFAULT_EXTENSION_STORE` en `src/shared/ipc.ts`).
+- Fuentes que le interesan: Olympus Scans, ManhwaWeb, Webtoons (inglés) y otras de Keiyoushi.
+- Trabaja en español, en Claude Desktop (local, Windows), con Sonnet esfuerzo medio para ahorrar créditos. No uses la nube salvo que lo pida.
+- Rama de trabajo: `main-b91vks`; el PR hacia `main` lo crea el usuario o se pide explícitamente.
+
+**Lo que ya se verificó en el esquema real (Suwayomi v2.4.2366, `schema.graphql`):**
+- Mutaciones disponibles para las próximas fases: `fetchSourceManga`, `fetchManga`, `fetchChapters`, `fetchChapterPages`, `updateManga`,
+  `updateChapter(s)`, `updateMangaCategories`, `updateLibrary`, `updateLibraryManga`, `createBackup`, `restoreBackup`, `setSettings`.
+- Consultas: `manga`, `mangas`, `chapter`, `chapters`, `categories`, `restoreStatus`, `sources`, `extensions`, `extensionStores`, `aboutServer`.
+- Los ids de fuente son `LongString` (cadena). Para instalar/actualizar/desinstalar una extensión, el `id` es su `pkgName`.
+- No inventes campos: lee el tipo en `schema.graphql`, escribe el `.graphql` y ejecuta `npm run codegen`.
+
+**Trampas conocidas:**
+- Suwayomi solo permite CORS desde `http://localhost:*`; por eso las consultas pasan por IPC (`gql()` en el renderer).
+  Las imágenes (`<img>`) sí se cargan directo desde `http://127.0.0.1:<puerto>` (la CSP de `index.html` ya lo permite).
+- No ejecutes `prettier --write .` sobre todo el repo: reformatea `PLAN.md`. Ya está en `.prettierignore`, pero formatea solo lo que toques.
+- `schema.graphql` y `src/renderer/src/api/gql/graphql.ts` están versionados y generados; no se editan a mano.
+- `onlyOperationTypes` / el plugin `typescript` de codegen duplicaban tipos: la configuración actual (solo `typescript-operations` y `typed-document-node`) es la que funciona.
+- Ajustes del motor: por propiedades de Java (`-Dsuwayomi.tachidesk.config.server.*`), no por `server.conf`.
+
 ## Idea
 
 Un "Mihon de escritorio": una app de Windows para leer manhwa/manga desde las mismas fuentes que el usuario
