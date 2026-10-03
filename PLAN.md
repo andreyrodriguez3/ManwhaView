@@ -9,7 +9,12 @@
 **Hecho:** fases 0 a 3, escritas en una sesión en la nube (Linux). Todo compila, `typecheck` y `lint` pasan, y la app se ejecutó
 de verdad con un Suwayomi de Linux (arranca el motor, muestra la versión, las pantallas cargan y los errores se ven).
 
-**Sin probar (hazlo primero en Windows, antes de empezar la Fase 4):**
+**Probado en Windows (2 oct 2026): los pasos 1–3 funcionan.** Se corrigió `fetch-suwayomi` (en Git Bash `tar` era el de GNU y fallaba con
+"Cannot connect to C:"; ahora usa `System32\tar.exe`) y se añadió `.gitattributes` (LF). En el primer arranque el motor descarga CEF (~270 MB)
+en segundo plano, pero ya responde antes. Extensiones y fuentes verificadas por GraphQL (Olympus, ManhwaWeb, Webtoons devuelven populares).
+Tras cerrar la ventana no queda `java.exe`. Lo que no se pudo ver sin pantalla: el texto "Motor v2.4.2366" en la interfaz (el motor sí responde con esa versión).
+
+**Pruebas que se hicieron (antes de la Fase 4):**
 1. `npm install`, `npm run fetch-suwayomi` y `npm run dev`: debe verse "Iniciando motor…" y luego "Motor v2.4.2366".
    El script descarga `Suwayomi-Server-v2.4.2366-windows-x64.zip` y usa `tar` para descomprimirlo (en Windows 10+ viene incluido).
 2. Ajustes → Añadir (el repo de Keiyoushi ya viene puesto) → pestaña Extensiones → "Refrescar lista" → instalar Olympus Scans, ManhwaWeb y Webtoons.
