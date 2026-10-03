@@ -99,6 +99,8 @@ export async function startEngine(): Promise<void> {
           `${PREFIX}systemTrayEnabled=false`,
           `${PREFIX}initialOpenInBrowserEnabled=false`,
           `${PREFIX}webUIEnabled=false`,
+          // Sin el navegador embebido (CEF): evita descargar ~270 MB en el primer arranque.
+          `${PREFIX}kcefEnabled=false`,
           '-jar',
           jar
         ],

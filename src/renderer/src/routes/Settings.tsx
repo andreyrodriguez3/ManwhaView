@@ -91,6 +91,11 @@ export default function Settings({
         <span className="label">Iniciar con Windows (arranca oculta en la bandeja)</span>
       </label>
       {!login.available && <p className="muted small">Solo disponible en la versión instalada.</p>}
+      <div className="row" style={{ marginTop: '0.5rem' }}>
+        <button className="secondary" onClick={() => void window.api.app.quit()}>
+          Salir de ManwhaView (cierra también el motor)
+        </button>
+      </div>
 
       <h3>Ventana</h3>
       <div className="shortcut-row">

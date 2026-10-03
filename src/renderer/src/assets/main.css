@@ -498,3 +498,6 @@ button.icon.close:hover {
   padding: 0.7rem 0.9rem;
   margin-top: 0.7rem;
 }
+.shortcut-row input[type='checkbox'] {
+  width: auto;
+}

@@ -6,8 +6,9 @@
 
 ## Estado actual y traspaso (léelo primero)
 
-**Hecho:** fases 0 a 3, escritas en una sesión en la nube (Linux). Todo compila, `typecheck` y `lint` pasan, y la app se ejecutó
-de verdad con un Suwayomi de Linux (arranca el motor, muestra la versión, las pantallas cargan y los errores se ven).
+**Hecho:** fases 0 a 10 (v0.1). Las pruebas del traspaso de las fases 0-3 se hicieron en Windows (abajo). Fases 4-10 probadas contra
+fuentes reales y con el ratón/teclado del sistema; el instalador se probó instalado (motor, fuentes, salir sin `java.exe`).
+Pendiente conocido: viaje de copia de seguridad con un teléfono real; prueba de "Iniciar con Windows" y de desinstalar en el instalador.
 
 **Probado en Windows (2 oct 2026): los pasos 1–3 funcionan.** Se corrigió `fetch-suwayomi` (en Git Bash `tar` era el de GNU y fallaba con
 "Cannot connect to C:"; ahora usa `System32\tar.exe`) y se añadió `.gitattributes` (LF). En el primer arranque el motor descarga CEF (~270 MB)
@@ -239,7 +240,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - En sentido contrario: Mihon → Restaurar.
 - Prueba un viaje completo teléfono → PC → teléfono y anota en el README qué se conserva (biblioteca, categorías, capítulos leídos) y qué no.
 
-### [ ] Fase 10: Instalador
+### [x] Fase 10: Instalador
 - electron-builder NSIS para Windows x64, con `resources/suwayomi` como `extraResources`. Icono propio.
 - Script `npm run dist`: ejecuta `fetch-suwayomi` y después el build.
 - En el README: cómo instalar y el aviso de SmartScreen (app sin firmar → "Más información" → "Ejecutar de todas formas").

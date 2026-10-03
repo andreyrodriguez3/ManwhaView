@@ -62,6 +62,7 @@ function start(): void {
   ipcMain.handle(IPC.backupRestore, (_e, path: string) => restoreBackup(path))
   ipcMain.handle(IPC.backupStatus, (_e, id: string) => restoreStatus(id))
   ipcMain.handle(IPC.backupExport, () => exportBackup())
+  ipcMain.handle(IPC.appQuit, () => app.quit())
   ipcMain.handle(IPC.appGetLogin, () => getLoginItem())
   ipcMain.handle(IPC.appSetLogin, (_e, v: boolean) => {
     setLoginItem(v)

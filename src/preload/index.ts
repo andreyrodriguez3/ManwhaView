@@ -58,6 +58,7 @@ const api = {
     export: (): Promise<string | null> => ipcRenderer.invoke(IPC.backupExport)
   },
   app: {
+    quit: (): Promise<void> => ipcRenderer.invoke(IPC.appQuit),
     getLogin: (): Promise<{ enabled: boolean; available: boolean }> =>
       ipcRenderer.invoke(IPC.appGetLogin),
     setLogin: (v: boolean): Promise<{ enabled: boolean; available: boolean }> =>

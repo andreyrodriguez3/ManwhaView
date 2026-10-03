@@ -22,6 +22,7 @@ export const IPC = {
   backupRestore: 'backup:restore',
   backupStatus: 'backup:status',
   backupExport: 'backup:export',
+  appQuit: 'app:quit',
   appGetLogin: 'app:getLogin',
   appSetLogin: 'app:setLogin',
   hotkey: 'hotkey:action',
