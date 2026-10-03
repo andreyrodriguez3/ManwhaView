@@ -13,6 +13,7 @@ let child: ChildProcess | null = null
 let log: WriteStream | null = null
 let state: EngineState = { status: 'starting' }
 let baseUrl: string | null = null
+export const engineUrl = (): string | null => baseUrl
 const listeners = new Set<(s: EngineState) => void>()
 
 export const getState = (): EngineState => state

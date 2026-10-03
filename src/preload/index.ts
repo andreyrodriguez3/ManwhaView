@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import {
   IPC,
   type EngineState,
+  type BackupSummary,
   type GraphqlResponse,
   type HotkeyAction,
   type Settings,
@@ -47,6 +48,14 @@ const api = {
     close: (): Promise<void> => ipcRenderer.invoke(IPC.winClose),
     /** El ratón entró/salió del asa del modo fantasma. */
     ghostHandle: (inside: boolean): void => ipcRenderer.send(IPC.winGhostHandle, inside)
+  },
+  backup: {
+    pickFile: (): Promise<string | null> => ipcRenderer.invoke(IPC.backupPick),
+    validate: (path: string): Promise<{ missingSources: string[] }> =>
+      ipcRenderer.invoke(IPC.backupValidate, path),
+    restore: (path: string): Promise<{ id: string }> => ipcRenderer.invoke(IPC.backupRestore, path),
+    status: (id: string): Promise<BackupSummary> => ipcRenderer.invoke(IPC.backupStatus, id),
+    export: (): Promise<string | null> => ipcRenderer.invoke(IPC.backupExport)
   },
   app: {
     getLogin: (): Promise<{ enabled: boolean; available: boolean }> =>

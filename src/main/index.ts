@@ -3,6 +3,13 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { IPC, type Settings } from '../shared/ipc'
 import { getSettings, onSettings, patchSettings } from './settings'
 import { getShortcutStatus, registerShortcuts, unregisterShortcuts } from './shortcuts'
+import {
+  exportBackup,
+  pickBackupFile,
+  restoreBackup,
+  restoreStatus,
+  validateBackup
+} from './backup'
 import { createTray, refreshTray } from './tray'
 import { getLoginItem, HIDDEN_ARG, setLoginItem } from './login'
 import { getState, graphql, onState, startEngine, stopEngine } from './suwayomi'
@@ -50,6 +57,11 @@ function start(): void {
   ipcMain.handle(IPC.winMinimize, () => getWindow()?.minimize())
   ipcMain.handle(IPC.winClose, () => getWindow()?.close())
   ipcMain.on(IPC.winGhostHandle, (_e, inside: boolean) => setGhostHandle(inside))
+  ipcMain.handle(IPC.backupPick, () => pickBackupFile())
+  ipcMain.handle(IPC.backupValidate, (_e, path: string) => validateBackup(path))
+  ipcMain.handle(IPC.backupRestore, (_e, path: string) => restoreBackup(path))
+  ipcMain.handle(IPC.backupStatus, (_e, id: string) => restoreStatus(id))
+  ipcMain.handle(IPC.backupExport, () => exportBackup())
   ipcMain.handle(IPC.appGetLogin, () => getLoginItem())
   ipcMain.handle(IPC.appSetLogin, (_e, v: boolean) => {
     setLoginItem(v)

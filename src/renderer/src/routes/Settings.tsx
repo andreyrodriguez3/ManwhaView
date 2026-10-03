@@ -8,6 +8,7 @@ import {
   RemoveExtensionStoreDocument
 } from '../api/gql/graphql'
 import { DEFAULT_EXTENSION_STORE } from '../../../shared/ipc'
+import BackupSettings from '../components/BackupSettings'
 import ShortcutSettings from '../components/ShortcutSettings'
 import { patchSettings, useSettings } from '../store/settings'
 
@@ -76,6 +77,8 @@ export default function Settings({
           <li className="muted small">Todavía no hay repositorios.</li>
         )}
       </ul>
+
+      <BackupSettings />
 
       <h3>Aplicación</h3>
       <label className="shortcut-row">

@@ -227,7 +227,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - "Iniciar con Windows" usa `app.setLoginItemSettings({ openAtLogin, args: ['--hidden'] })`. Con `--hidden`, la app arranca solo en la bandeja.
 - Instancia única con `app.requestSingleInstanceLock()`: si se abre una segunda copia, se muestra la ventana existente.
 
-### [ ] Fase 9: Copias de seguridad Mihon ↔ PC
+### [x] Fase 9: Copias de seguridad Mihon ↔ PC
 - **Importar:**
   - Selector de archivo `.tachibk` y validación previa, si el esquema la ofrece.
   - Restauración con progreso y resumen al terminar (cuántos manga, cuáles fallaron).

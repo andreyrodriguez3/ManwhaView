@@ -17,6 +17,11 @@ export const IPC = {
   winMinimize: 'win:minimize',
   winClose: 'win:close',
   winGhostHandle: 'win:ghostHandle',
+  backupPick: 'backup:pick',
+  backupValidate: 'backup:validate',
+  backupRestore: 'backup:restore',
+  backupStatus: 'backup:status',
+  backupExport: 'backup:export',
   appGetLogin: 'app:getLogin',
   appSetLogin: 'app:setLogin',
   hotkey: 'hotkey:action',
@@ -100,3 +105,10 @@ export type HotkeyAction = 'scrollUp' | 'scrollDown' | 'toggleAutoScroll'
 
 /** Atajos que el sistema no dejó registrar (ya los usa otra aplicación o son inválidos). */
 export type ShortcutStatus = { failed: ShortcutAction[] }
+
+/** Progreso de una restauración de copia de seguridad. `state` es el de Suwayomi (RESTORING_MANGA, SUCCESS…). */
+export interface BackupSummary {
+  state: string
+  progress: number
+  total: number
+}
