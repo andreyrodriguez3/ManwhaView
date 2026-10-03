@@ -1,5 +1,20 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type EngineState, type GraphqlResponse } from '../shared/ipc'
+import {
+  IPC,
+  type EngineState,
+  type BackupSummary,
+  type GraphqlResponse,
+  type HotkeyAction,
+  type Settings,
+  type ShortcutStatus,
+  type WinState
+} from '../shared/ipc'
+
+const subscribe = <T>(channel: string, cb: (v: T) => void): (() => void) => {
+  const handler = (_: unknown, v: T): void => cb(v)
+  ipcRenderer.on(channel, handler)
+  return () => ipcRenderer.removeListener(channel, handler)
+}
 
 const api = {
   engine: {
@@ -13,6 +28,47 @@ const api = {
   },
   graphql: <T>(query: string, variables?: unknown): Promise<GraphqlResponse<T>> =>
     ipcRenderer.invoke(IPC.engineGraphql, query, variables),
+  settings: {
+    get: (): Promise<Settings> => ipcRenderer.invoke(IPC.settingsGet),
+    patch: <K extends keyof Settings>(key: K, value: Partial<Settings[K]>): Promise<Settings> =>
+      ipcRenderer.invoke(IPC.settingsPatch, key, value),
+    onChange: (cb: (s: Settings) => void): (() => void) => {
+      const handler = (_: unknown, s: Settings): void => cb(s)
+      ipcRenderer.on(IPC.settingsChanged, handler)
+      return () => ipcRenderer.removeListener(IPC.settingsChanged, handler)
+    }
+  },
+  win: {
+    getState: (): Promise<WinState> => ipcRenderer.invoke(IPC.winGetState),
+    onState: (cb: (s: WinState) => void): (() => void) => subscribe(IPC.winState, cb),
+    setPinned: (v: boolean): Promise<void> => ipcRenderer.invoke(IPC.winSetPinned, v),
+    setGhost: (v: boolean): Promise<void> => ipcRenderer.invoke(IPC.winSetGhost, v),
+    setOpacity: (v: number): Promise<void> => ipcRenderer.invoke(IPC.winSetOpacity, v),
+    minimize: (): Promise<void> => ipcRenderer.invoke(IPC.winMinimize),
+    close: (): Promise<void> => ipcRenderer.invoke(IPC.winClose),
+    /** El ratón entró/salió del asa del modo fantasma. */
+    ghostHandle: (inside: boolean): void => ipcRenderer.send(IPC.winGhostHandle, inside)
+  },
+  backup: {
+    pickFile: (): Promise<string | null> => ipcRenderer.invoke(IPC.backupPick),
+    validate: (path: string): Promise<{ missingSources: string[] }> =>
+      ipcRenderer.invoke(IPC.backupValidate, path),
+    restore: (path: string): Promise<{ id: string }> => ipcRenderer.invoke(IPC.backupRestore, path),
+    status: (id: string): Promise<BackupSummary> => ipcRenderer.invoke(IPC.backupStatus, id),
+    export: (): Promise<string | null> => ipcRenderer.invoke(IPC.backupExport)
+  },
+  app: {
+    quit: (): Promise<void> => ipcRenderer.invoke(IPC.appQuit),
+    getLogin: (): Promise<{ enabled: boolean; available: boolean }> =>
+      ipcRenderer.invoke(IPC.appGetLogin),
+    setLogin: (v: boolean): Promise<{ enabled: boolean; available: boolean }> =>
+      ipcRenderer.invoke(IPC.appSetLogin, v)
+  },
+  hotkeys: {
+    onAction: (cb: (a: HotkeyAction) => void): (() => void) => subscribe(IPC.hotkey, cb),
+    getStatus: (): Promise<ShortcutStatus> => ipcRenderer.invoke(IPC.shortcutsGetStatus),
+    onStatus: (cb: (s: ShortcutStatus) => void): (() => void) => subscribe(IPC.shortcutsStatus, cb)
+  },
   showInFolder: (path: string): Promise<void> => ipcRenderer.invoke(IPC.openPath, path)
 }
 

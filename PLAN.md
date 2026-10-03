@@ -6,10 +6,16 @@
 
 ## Estado actual y traspaso (léelo primero)
 
-**Hecho:** fases 0 a 3, escritas en una sesión en la nube (Linux). Todo compila, `typecheck` y `lint` pasan, y la app se ejecutó
-de verdad con un Suwayomi de Linux (arranca el motor, muestra la versión, las pantallas cargan y los errores se ven).
+**Hecho:** fases 0 a 10 (v0.1). Las pruebas del traspaso de las fases 0-3 se hicieron en Windows (abajo). Fases 4-10 probadas contra
+fuentes reales y con el ratón/teclado del sistema; el instalador se probó instalado (motor, fuentes, salir sin `java.exe`).
+Pendiente conocido: viaje de copia de seguridad con un teléfono real; prueba de "Iniciar con Windows" y de desinstalar en el instalador.
 
-**Sin probar (hazlo primero en Windows, antes de empezar la Fase 4):**
+**Probado en Windows (2 oct 2026): los pasos 1–3 funcionan.** Se corrigió `fetch-suwayomi` (en Git Bash `tar` era el de GNU y fallaba con
+"Cannot connect to C:"; ahora usa `System32\tar.exe`) y se añadió `.gitattributes` (LF). En el primer arranque el motor descarga CEF (~270 MB)
+en segundo plano, pero ya responde antes. Extensiones y fuentes verificadas por GraphQL (Olympus, ManhwaWeb, Webtoons devuelven populares).
+Tras cerrar la ventana no queda `java.exe`. Lo que no se pudo ver sin pantalla: el texto "Motor v2.4.2366" en la interfaz (el motor sí responde con esa versión).
+
+**Pruebas que se hicieron (antes de la Fase 4):**
 1. `npm install`, `npm run fetch-suwayomi` y `npm run dev`: debe verse "Iniciando motor…" y luego "Motor v2.4.2366".
    El script descarga `Suwayomi-Server-v2.4.2366-windows-x64.zip` y usa `tar` para descomprimirlo (en Windows 10+ viene incluido).
 2. Ajustes → Añadir (el repo de Keiyoushi ya viene puesto) → pestaña Extensiones → "Refrescar lista" → instalar Olympus Scans, ManhwaWeb y Webtoons.
@@ -159,7 +165,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - Botones Instalar, Actualizar y Desinstalar, con icono y versión de cada una.
 - **Listo cuando:** se pueden instalar Olympus Scans, ManhwaWeb y Webtoons, y aparecen sus fuentes.
 
-### [ ] Fase 4: Explorar y búsqueda global
+### [x] Fase 4: Explorar y búsqueda global
 - **Explorar:** lista de fuentes instaladas, con Populares, Recientes y Buscar dentro de cada una (scroll infinito).
 - **Búsqueda global:**
   - Un buscador que consulta todas las fuentes marcadas (por defecto las instaladas en es/en), como mucho 3 a la vez.
@@ -170,14 +176,14 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - Botones "Añadir/Quitar de biblioteca", "Continuar/Empezar" y "Abrir en el navegador".
   - Al abrir el detalle, pide a la fuente los datos y capítulos actualizados.
 
-### [ ] Fase 5: Biblioteca
+### [x] Fase 5: Biblioteca
 - Cuadrícula de portadas con un número de capítulos sin leer.
 - Pestañas por categoría (vienen del backup de Mihon), un filtro de texto y orden por: última lectura, sin leer o A-Z.
 - Clic en una portada abre el detalle. Botón **Continuar** en cada tarjeta (al pasar el ratón) que abre directo el siguiente capítulo sin leer.
 - Botón "Buscar capítulos nuevos": lanza la actualización de la biblioteca en Suwayomi y muestra el progreso.
 - Tamaño de la cuadrícula adaptable: con la ventana estrecha, 2 columnas.
 
-### [ ] Fase 6: Lector
+### [x] Fase 6: Lector
 - Modos de lectura:
   - **Vertical continuo** (webtoon), por defecto.
   - **Paginado** (izquierda a derecha o derecha a izquierda), opcional. Se guarda por manga.
@@ -191,7 +197,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - Teclado: ↑/↓, Espacio/Shift+Espacio, AvPág/RePág, ←/→ (capítulo anterior o siguiente).
 - Barra del lector: título y capítulo, menú de capítulos, modo y auto-scroll. Se oculta sola mientras se lee.
 
-### [ ] Fase 7: Ventana flotante (lo más importante)
+### [x] Fase 7: Ventana flotante (lo más importante)
 - `BrowserWindow` con `frame: false`, `transparent: false`, redimensionable y `minWidth: 260`, `minHeight: 320`. Barra de título propia en React (`-webkit-app-region: drag`).
 - **Tamaño libre:** se arrastran bordes y esquinas. Se guardan los límites (posición y tamaño) al moverla o redimensionarla (con debounce).
   Al arrancar, si esos límites quedan fuera de los monitores conectados, la ventana se recoloca en el monitor principal.
@@ -216,13 +222,13 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - `Ctrl+Alt+Espacio`: auto-scroll sí/no.
 - Se recuerdan entre sesiones: tamaño, posición, opacidad, fijada y modo fantasma (al arrancar, el fantasma empieza **desactivado** por seguridad).
 
-### [ ] Fase 8: Bandeja e inicio con Windows
+### [x] Fase 8: Bandeja e inicio con Windows
 - Icono en la bandeja con menú: Mostrar/Ocultar · Fijar · Modo fantasma · ✓ Iniciar con Windows · Salir. Doble clic = mostrar.
 - ✕ esconde la app en la bandeja (la primera vez avisa con una notificación). "Salir" cierra todo, Suwayomi incluido.
 - "Iniciar con Windows" usa `app.setLoginItemSettings({ openAtLogin, args: ['--hidden'] })`. Con `--hidden`, la app arranca solo en la bandeja.
 - Instancia única con `app.requestSingleInstanceLock()`: si se abre una segunda copia, se muestra la ventana existente.
 
-### [ ] Fase 9: Copias de seguridad Mihon ↔ PC
+### [x] Fase 9: Copias de seguridad Mihon ↔ PC
 - **Importar:**
   - Selector de archivo `.tachibk` y validación previa, si el esquema la ofrece.
   - Restauración con progreso y resumen al terminar (cuántos manga, cuáles fallaron).
@@ -234,7 +240,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - En sentido contrario: Mihon → Restaurar.
 - Prueba un viaje completo teléfono → PC → teléfono y anota en el README qué se conserva (biblioteca, categorías, capítulos leídos) y qué no.
 
-### [ ] Fase 10: Instalador
+### [x] Fase 10: Instalador
 - electron-builder NSIS para Windows x64, con `resources/suwayomi` como `extraResources`. Icono propio.
 - Script `npm run dist`: ejecuta `fetch-suwayomi` y después el build.
 - En el README: cómo instalar y el aviso de SmartScreen (app sin firmar → "Más información" → "Ejecutar de todas formas").
@@ -249,6 +255,10 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - **Modo fantasma:** es la parte más delicada. Hay que probarlo de verdad en Windows con varios programas detrás.
 - **Contenido:** la app no incluye ni distribuye extensiones ni contenido. El usuario configura su propio repo de extensiones.
 
+## Mejoras posteriores a la v1 (hechas)
+Seguimiento AniList/MAL/etc. (Ajustes + ficha + sincronización al terminar capítulo) · aviso si el motor se detiene ·
+filtro de idioma en Explorar · barra del lector compacta en ventanas estrechas · Esc vuelve a la ficha.
+
 ## Ideas para después de la v1
-Notificaciones de capítulos nuevos · descargas offline · sincronización con AniList/MAL · FlareSolverr ·
+Notificaciones de capítulos nuevos · descargas offline · FlareSolverr/CEF · login de Kitsu (usuario y contraseña) ·
 temas de color · estadísticas de lectura.

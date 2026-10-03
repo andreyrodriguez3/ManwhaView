@@ -1,46 +1,40 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
-import { IPC } from '../shared/ipc'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { IPC, type Settings } from '../shared/ipc'
+import { getSettings, onSettings, patchSettings } from './settings'
+import { getShortcutStatus, registerShortcuts, unregisterShortcuts } from './shortcuts'
+import {
+  exportBackup,
+  pickBackupFile,
+  restoreBackup,
+  restoreStatus,
+  validateBackup
+} from './backup'
+import { createTray, refreshTray } from './tray'
+import { getLoginItem, HIDDEN_ARG, setLoginItem } from './login'
 import { getState, graphql, onState, startEngine, stopEngine } from './suwayomi'
+import {
+  createWindow,
+  getWinState,
+  getWindow,
+  setGhost,
+  setGhostHandle,
+  setOpacity,
+  onWinChange,
+  setPinned,
+  setQuitting,
+  showWindow
+} from './window'
 
-let mainWindow: BrowserWindow | null = null
-
-function createWindow(): void {
-  mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    minWidth: 260,
-    minHeight: 320,
-    show: false,
-    autoHideMenuBar: true,
-    title: 'ManwhaView',
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true
-    }
-  })
-
-  mainWindow.on('ready-to-show', () => mainWindow?.show())
-  mainWindow.on('closed', () => (mainWindow = null))
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    if (/^https?:\/\//.test(details.url)) shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
+// Instancia única: una segunda copia solo muestra la ventana de la primera.
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+} else {
+  app.on('second-instance', () => showWindow())
+  void app.whenReady().then(start)
 }
 
-app.whenReady().then(() => {
+function start(): void {
   electronApp.setAppUserModelId('com.manwhaview.app')
   app.on('browser-window-created', (_, window) => optimizer.watchWindowShortcuts(window))
 
@@ -50,24 +44,64 @@ app.whenReady().then(() => {
     graphql(query, variables)
   )
   ipcMain.handle(IPC.openPath, (_e, path: string) => shell.showItemInFolder(path))
-  onState((s) => mainWindow?.webContents.send(IPC.engineState, s))
 
-  createWindow()
+  ipcMain.handle(IPC.settingsGet, () => getSettings())
+  ipcMain.handle(IPC.settingsPatch, (_e, key: keyof Settings, value: object) =>
+    patchSettings(key, value as Partial<Settings[typeof key]>)
+  )
+
+  ipcMain.handle(IPC.winGetState, () => getWinState())
+  ipcMain.handle(IPC.winSetPinned, (_e, v: boolean) => setPinned(v))
+  ipcMain.handle(IPC.winSetGhost, (_e, v: boolean) => setGhost(v))
+  ipcMain.handle(IPC.winSetOpacity, (_e, v: number) => setOpacity(v))
+  ipcMain.handle(IPC.winMinimize, () => getWindow()?.minimize())
+  ipcMain.handle(IPC.winClose, () => getWindow()?.close())
+  ipcMain.on(IPC.winGhostHandle, (_e, inside: boolean) => setGhostHandle(inside))
+  ipcMain.handle(IPC.backupPick, () => pickBackupFile())
+  ipcMain.handle(IPC.backupValidate, (_e, path: string) => validateBackup(path))
+  ipcMain.handle(IPC.backupRestore, (_e, path: string) => restoreBackup(path))
+  ipcMain.handle(IPC.backupStatus, (_e, id: string) => restoreStatus(id))
+  ipcMain.handle(IPC.backupExport, () => exportBackup())
+  ipcMain.handle(IPC.appQuit, () => app.quit())
+  ipcMain.handle(IPC.appGetLogin, () => getLoginItem())
+  ipcMain.handle(IPC.appSetLogin, (_e, v: boolean) => {
+    setLoginItem(v)
+    refreshTray()
+    return getLoginItem()
+  })
+  ipcMain.handle(IPC.shortcutsGetStatus, () => getShortcutStatus())
+
+  let shortcutsJson = JSON.stringify(getSettings().shortcuts)
+  onSettings((s) => {
+    getWindow()?.webContents.send(IPC.settingsChanged, s)
+    const json = JSON.stringify(s.shortcuts)
+    if (json !== shortcutsJson) {
+      shortcutsJson = json
+      registerShortcuts()
+    }
+  })
+  onState((s) => getWindow()?.webContents.send(IPC.engineState, s))
+
+  onWinChange(refreshTray)
+  createWindow({ hidden: process.argv.includes(HIDDEN_ARG) })
+  createTray()
+  registerShortcuts()
   void startEngine()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-})
+}
 
 let quitting = false
 app.on('before-quit', (e) => {
   if (quitting) return
   e.preventDefault()
   quitting = true
+  setQuitting()
+  unregisterShortcuts()
   void stopEngine().finally(() => app.quit())
 })
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
+// La app vive en la bandeja: cerrar la ventana no la termina (solo «Salir»).
+app.on('window-all-closed', () => {})

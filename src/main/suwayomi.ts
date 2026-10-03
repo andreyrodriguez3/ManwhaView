@@ -13,6 +13,7 @@ let child: ChildProcess | null = null
 let log: WriteStream | null = null
 let state: EngineState = { status: 'starting' }
 let baseUrl: string | null = null
+export const engineUrl = (): string | null => baseUrl
 const listeners = new Set<(s: EngineState) => void>()
 
 export const getState = (): EngineState => state
@@ -98,6 +99,8 @@ export async function startEngine(): Promise<void> {
           `${PREFIX}systemTrayEnabled=false`,
           `${PREFIX}initialOpenInBrowserEnabled=false`,
           `${PREFIX}webUIEnabled=false`,
+          // Sin el navegador embebido (CEF): evita descargar ~270 MB en el primer arranque.
+          `${PREFIX}kcefEnabled=false`,
           '-jar',
           jar
         ],
@@ -109,7 +112,11 @@ export async function startEngine(): Promise<void> {
       proc.once('exit', (code) => {
         if (child === proc) {
           child = null
-          if (state.status !== 'ready') fail(`El motor se cerró al arrancar (código ${code})`)
+          fail(
+            state.status === 'ready'
+              ? `El motor se detuvo inesperadamente (código ${code}). Pulsa Reintentar.`
+              : `El motor se cerró al arrancar (código ${code})`
+          )
         }
       })
     }

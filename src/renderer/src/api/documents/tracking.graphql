@@ -1,0 +1,104 @@
+fragment TrackerFields on TrackerType {
+  id
+  name
+  icon
+  isLoggedIn
+  isTokenExpired
+  authUrl
+  statuses {
+    name
+    value
+  }
+}
+
+fragment TrackRecordFields on TrackRecordType {
+  id
+  trackerId
+  mangaId
+  title
+  remoteUrl
+  status
+  lastChapterRead
+  totalChapters
+  displayScore
+}
+
+query Trackers {
+  trackers {
+    nodes {
+      ...TrackerFields
+    }
+  }
+}
+
+mutation LoginTrackerOAuth($trackerId: Int!, $callbackUrl: String!) {
+  loginTrackerOAuth(input: { trackerId: $trackerId, callbackUrl: $callbackUrl }) {
+    isLoggedIn
+    tracker {
+      ...TrackerFields
+    }
+  }
+}
+
+mutation LogoutTracker($trackerId: Int!) {
+  logoutTracker(input: { trackerId: $trackerId }) {
+    isLoggedIn
+  }
+}
+
+query MangaTrackRecords($mangaId: Int!) {
+  manga(id: $mangaId) {
+    id
+    trackRecords {
+      nodes {
+        ...TrackRecordFields
+      }
+    }
+  }
+}
+
+query SearchTracker($trackerId: Int!, $query: String!) {
+  searchTracker(input: { trackerId: $trackerId, query: $query }) {
+    trackSearches {
+      remoteId
+      title
+      coverUrl
+      publishingStatus
+      publishingType
+      totalChapters
+      summary
+    }
+  }
+}
+
+mutation BindTrack($mangaId: Int!, $trackerId: Int!, $remoteId: LongString!) {
+  bindTrack(input: { mangaId: $mangaId, trackerId: $trackerId, remoteId: $remoteId }) {
+    trackRecord {
+      ...TrackRecordFields
+    }
+  }
+}
+
+mutation UnbindTrack($recordId: Int!) {
+  unbindTrack(input: { recordId: $recordId }) {
+    trackRecord {
+      id
+    }
+  }
+}
+
+mutation UpdateTrack($recordId: Int!, $status: Int) {
+  updateTrack(input: { recordId: $recordId, status: $status }) {
+    trackRecord {
+      ...TrackRecordFields
+    }
+  }
+}
+
+mutation TrackProgress($mangaId: Int!) {
+  trackProgress(input: { mangaId: $mangaId }) {
+    trackRecords {
+      ...TrackRecordFields
+    }
+  }
+}

@@ -3,6 +3,7 @@ query Sources {
     nodes {
       id
       name
+      displayName
       lang
       iconUrl
       supportsLatest

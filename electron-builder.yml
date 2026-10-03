@@ -14,9 +14,15 @@ files:
 asarUnpack:
   - resources/icon.png
 # Suwayomi (con su Java) va fuera del asar para poder ejecutarse.
+# Solo hacen falta jre/ y bin/: el lanzador con interfaz web de Suwayomi (electron/, .bat) no se usa.
 extraResources:
   - from: resources/suwayomi
     to: suwayomi
+    filter:
+      - '**/*'
+      - '!electron/**'
+      - '!Suwayomi-Launcher.jar'
+      - '!Suwayomi Launcher.bat'
 win:
   executableName: manwhaview
   target: nsis

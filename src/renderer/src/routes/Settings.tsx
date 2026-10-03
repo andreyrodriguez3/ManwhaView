@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { gql } from '../api/client'
 import {
@@ -8,6 +8,10 @@ import {
   RemoveExtensionStoreDocument
 } from '../api/gql/graphql'
 import { DEFAULT_EXTENSION_STORE } from '../../../shared/ipc'
+import BackupSettings from '../components/BackupSettings'
+import ShortcutSettings from '../components/ShortcutSettings'
+import TrackerSettings from '../components/TrackerSettings'
+import { patchSettings, useSettings } from '../store/settings'
 
 export default function Settings({
   logPath,
@@ -17,6 +21,11 @@ export default function Settings({
   version: string
 }): React.JSX.Element {
   const qc = useQueryClient()
+  const [login, setLogin] = useState({ enabled: false, available: false })
+  useEffect(() => {
+    void window.api.app.getLogin().then(setLogin)
+  }, [])
+  const ghostOpacity = useSettings((s) => s.settings.window.ghostOpacity)
   const [url, setUrl] = useState(DEFAULT_EXTENSION_STORE)
   const stores = useQuery({ queryKey: ['stores'], queryFn: () => gql(ExtensionStoresDocument) })
 
@@ -69,6 +78,43 @@ export default function Settings({
           <li className="muted small">Todavía no hay repositorios.</li>
         )}
       </ul>
+
+      <TrackerSettings />
+
+      <BackupSettings />
+
+      <h3>Aplicación</h3>
+      <label className="shortcut-row">
+        <input
+          type="checkbox"
+          checked={login.enabled}
+          disabled={!login.available}
+          onChange={(e) => void window.api.app.setLogin(e.target.checked).then(setLogin)}
+        />
+        <span className="label">Iniciar con Windows (arranca oculta en la bandeja)</span>
+      </label>
+      {!login.available && <p className="muted small">Solo disponible en la versión instalada.</p>}
+      <div className="row" style={{ marginTop: '0.5rem' }}>
+        <button className="secondary" onClick={() => void window.api.app.quit()}>
+          Salir de ManwhaView (cierra también el motor)
+        </button>
+      </div>
+
+      <h3>Ventana</h3>
+      <div className="shortcut-row">
+        <span className="label">Opacidad en modo fantasma</span>
+        <input
+          type="range"
+          min={20}
+          max={100}
+          step={5}
+          value={Math.round(ghostOpacity * 100)}
+          onChange={(e) => patchSettings('window', { ghostOpacity: Number(e.target.value) / 100 })}
+        />
+        <span className="muted small">{Math.round(ghostOpacity * 100)} %</span>
+      </div>
+
+      <ShortcutSettings />
 
       <h3>Motor</h3>
       <p className="muted small">Suwayomi-Server {version}</p>

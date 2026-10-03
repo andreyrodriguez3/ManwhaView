@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { gql, serverAsset } from '../api/client'
+import { LANGS, type Lang } from '../lib/lang'
 import {
   ExtensionsDocument,
   FetchExtensionsDocument,
@@ -9,18 +10,7 @@ import {
   type ExtensionFieldsFragment
 } from '../api/gql/graphql'
 
-type Lang = 'es-en' | 'es' | 'en' | 'all'
 type Status = 'all' | 'installed' | 'updates' | 'available'
-
-const LANGS: Record<Lang, { label: string; match: (l: string) => boolean }> = {
-  'es-en': {
-    label: 'Español + Inglés',
-    match: (l) => ['es', 'en', 'all'].includes(l) || l.startsWith('es-') || l.startsWith('en-')
-  },
-  es: { label: 'Español', match: (l) => l === 'es' || l.startsWith('es-') },
-  en: { label: 'Inglés', match: (l) => l === 'en' || l.startsWith('en-') },
-  all: { label: 'Todos los idiomas', match: () => true }
-}
 
 export default function Extensions(): React.JSX.Element {
   const qc = useQueryClient()
