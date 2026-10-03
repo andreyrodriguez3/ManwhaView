@@ -1,0 +1,29 @@
+appId: com.manwhaview.app
+productName: ManwhaView
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!scripts/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md,PLAN.md,CLAUDE.md,codegen.ts,schema.graphql}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!resources/suwayomi/**'
+asarUnpack:
+  - resources/icon.png
+# Suwayomi (con su Java) va fuera del asar para poder ejecutarse.
+extraResources:
+  - from: resources/suwayomi
+    to: suwayomi
+win:
+  executableName: manwhaview
+  target: nsis
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+  oneClick: false
+  allowToChangeInstallationDirectory: true
