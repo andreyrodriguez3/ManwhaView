@@ -1,4 +1,4 @@
-import { BrowserWindow, screen, shell } from 'electron'
+import { BrowserWindow, Notification, screen, shell } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -13,6 +13,8 @@ let win: BrowserWindow | null = null
 let ghost = false
 let pinned = false
 let ghostHandleActive = false
+let quitting = false
+const changeListeners = new Set<() => void>()
 let saveTimer: ReturnType<typeof setTimeout> | null = null
 
 export const getWindow = (): BrowserWindow | null => win
@@ -23,8 +25,30 @@ export const getWinState = (): WinState => ({
   opacity: getSettings().window.opacity
 })
 
+/** Avisa a quien muestre el estado de la ventana (interfaz y menú de la bandeja). */
+export const onWinChange = (fn: () => void): void => void changeListeners.add(fn)
+
+/** Tras llamarla, cerrar la ventana la cierra de verdad en vez de esconderla en la bandeja. */
+export const setQuitting = (): void => {
+  quitting = true
+}
+
 function broadcast(): void {
   win?.webContents.send(IPC.winState, getWinState())
+  changeListeners.forEach((fn) => fn())
+}
+
+/** ✕ esconde la app en la bandeja; la primera vez avisa de ello. */
+function hideToTray(): void {
+  win?.hide()
+  changeListeners.forEach((fn) => fn())
+  if (!getSettings().app.trayHintShown && Notification.isSupported()) {
+    new Notification({
+      title: 'ManwhaView sigue abierta',
+      body: 'Está en la bandeja del sistema. Haz doble clic en su icono para mostrarla o usa «Salir» para cerrarla.'
+    }).show()
+    patchSettings('app', { trayHintShown: true })
+  }
 }
 
 /** Los límites guardados solo valen si aún se ven en algún monitor conectado. */
@@ -156,7 +180,14 @@ export function createWindow(opts: { hidden?: boolean } = {}): BrowserWindow {
   win.on('ready-to-show', () => {
     if (!opts.hidden) win?.show()
   })
+  win.on('close', (e) => {
+    if (quitting) return
+    e.preventDefault()
+    hideToTray()
+  })
   win.on('closed', () => (win = null))
+  win.on('show', () => changeListeners.forEach((fn) => fn()))
+  win.on('hide', () => changeListeners.forEach((fn) => fn()))
   win.on('move', scheduleSaveBounds)
   win.on('resize', scheduleSaveBounds)
   // Fijada = no se puede minimizar (p. ej. Win+D): si llega el evento, se restaura.

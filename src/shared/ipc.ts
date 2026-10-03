@@ -17,6 +17,8 @@ export const IPC = {
   winMinimize: 'win:minimize',
   winClose: 'win:close',
   winGhostHandle: 'win:ghostHandle',
+  appGetLogin: 'app:getLogin',
+  appSetLogin: 'app:setLogin',
   hotkey: 'hotkey:action',
   shortcutsStatus: 'shortcuts:status',
   shortcutsGetStatus: 'shortcuts:getStatus'

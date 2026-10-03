@@ -48,6 +48,12 @@ const api = {
     /** El ratón entró/salió del asa del modo fantasma. */
     ghostHandle: (inside: boolean): void => ipcRenderer.send(IPC.winGhostHandle, inside)
   },
+  app: {
+    getLogin: (): Promise<{ enabled: boolean; available: boolean }> =>
+      ipcRenderer.invoke(IPC.appGetLogin),
+    setLogin: (v: boolean): Promise<{ enabled: boolean; available: boolean }> =>
+      ipcRenderer.invoke(IPC.appSetLogin, v)
+  },
   hotkeys: {
     onAction: (cb: (a: HotkeyAction) => void): (() => void) => subscribe(IPC.hotkey, cb),
     getStatus: (): Promise<ShortcutStatus> => ipcRenderer.invoke(IPC.shortcutsGetStatus),

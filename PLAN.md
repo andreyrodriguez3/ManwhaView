@@ -221,7 +221,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - `Ctrl+Alt+Espacio`: auto-scroll sí/no.
 - Se recuerdan entre sesiones: tamaño, posición, opacidad, fijada y modo fantasma (al arrancar, el fantasma empieza **desactivado** por seguridad).
 
-### [ ] Fase 8: Bandeja e inicio con Windows
+### [x] Fase 8: Bandeja e inicio con Windows
 - Icono en la bandeja con menú: Mostrar/Ocultar · Fijar · Modo fantasma · ✓ Iniciar con Windows · Salir. Doble clic = mostrar.
 - ✕ esconde la app en la bandeja (la primera vez avisa con una notificación). "Salir" cierra todo, Suwayomi incluido.
 - "Iniciar con Windows" usa `app.setLoginItemSettings({ openAtLogin, args: ['--hidden'] })`. Con `--hidden`, la app arranca solo en la bandeja.

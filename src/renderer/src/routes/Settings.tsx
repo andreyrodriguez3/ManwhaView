@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { gql } from '../api/client'
 import {
@@ -19,6 +19,10 @@ export default function Settings({
   version: string
 }): React.JSX.Element {
   const qc = useQueryClient()
+  const [login, setLogin] = useState({ enabled: false, available: false })
+  useEffect(() => {
+    void window.api.app.getLogin().then(setLogin)
+  }, [])
   const ghostOpacity = useSettings((s) => s.settings.window.ghostOpacity)
   const [url, setUrl] = useState(DEFAULT_EXTENSION_STORE)
   const stores = useQuery({ queryKey: ['stores'], queryFn: () => gql(ExtensionStoresDocument) })
@@ -72,6 +76,18 @@ export default function Settings({
           <li className="muted small">Todavía no hay repositorios.</li>
         )}
       </ul>
+
+      <h3>Aplicación</h3>
+      <label className="shortcut-row">
+        <input
+          type="checkbox"
+          checked={login.enabled}
+          disabled={!login.available}
+          onChange={(e) => void window.api.app.setLogin(e.target.checked).then(setLogin)}
+        />
+        <span className="label">Iniciar con Windows (arranca oculta en la bandeja)</span>
+      </label>
+      {!login.available && <p className="muted small">Solo disponible en la versión instalada.</p>}
 
       <h3>Ventana</h3>
       <div className="shortcut-row">
