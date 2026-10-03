@@ -17,6 +17,7 @@ interface Nav {
   stack: View[]
   view: View
   go: (v: View) => void
+  replace: (v: View) => void
   back: () => void
   tab: (t: TabName) => void
 }
@@ -25,6 +26,7 @@ export const useNav = create<Nav>((set) => ({
   stack: [{ name: 'library' }],
   view: { name: 'library' },
   go: (v) => set((s) => ({ stack: [...s.stack, v], view: v })),
+  replace: (v) => set((s) => ({ stack: [...s.stack.slice(0, -1), v], view: v })),
   back: () =>
     set((s) => {
       if (s.stack.length < 2) return s

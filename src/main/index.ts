@@ -2,7 +2,8 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { IPC } from '../shared/ipc'
+import { IPC, type Settings } from '../shared/ipc'
+import { getSettings, onSettings, patchSettings } from './settings'
 import { getState, graphql, onState, startEngine, stopEngine } from './suwayomi'
 
 let mainWindow: BrowserWindow | null = null
@@ -50,6 +51,11 @@ app.whenReady().then(() => {
     graphql(query, variables)
   )
   ipcMain.handle(IPC.openPath, (_e, path: string) => shell.showItemInFolder(path))
+  ipcMain.handle(IPC.settingsGet, () => getSettings())
+  ipcMain.handle(IPC.settingsPatch, (_e, key: keyof Settings, value: object) =>
+    patchSettings(key, value as Partial<Settings[typeof key]>)
+  )
+  onSettings((s) => mainWindow?.webContents.send(IPC.settingsChanged, s))
   onState((s) => mainWindow?.webContents.send(IPC.engineState, s))
 
   createWindow()

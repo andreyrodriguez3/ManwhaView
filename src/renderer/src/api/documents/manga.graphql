@@ -108,3 +108,12 @@ mutation UpdateChapters($ids: [Int!]!, $patch: UpdateChapterPatchInput!) {
     }
   }
 }
+
+mutation FetchChapterPages($chapterId: Int!) {
+  fetchChapterPages(input: { chapterId: $chapterId }) {
+    pages
+    chapter {
+      ...ChapterFields
+    }
+  }
+}

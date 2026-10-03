@@ -182,7 +182,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - Botón "Buscar capítulos nuevos": lanza la actualización de la biblioteca en Suwayomi y muestra el progreso.
 - Tamaño de la cuadrícula adaptable: con la ventana estrecha, 2 columnas.
 
-### [ ] Fase 6: Lector
+### [x] Fase 6: Lector
 - Modos de lectura:
   - **Vertical continuo** (webtoon), por defecto.
   - **Paginado** (izquierda a derecha o derecha a izquierda), opcional. Se guarda por manga.

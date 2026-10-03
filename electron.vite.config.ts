@@ -3,7 +3,8 @@ import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  main: {},
+  // electron-store es solo ESM: se empaqueta junto al código del proceso principal.
+  main: { build: { externalizeDeps: { exclude: ['electron-store'] } } },
   preload: {},
   renderer: {
     resolve: {
