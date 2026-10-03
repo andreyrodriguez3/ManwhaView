@@ -8,7 +8,18 @@ export const IPC = {
   openPath: 'shell:openPath',
   settingsGet: 'settings:get',
   settingsPatch: 'settings:patch',
-  settingsChanged: 'settings:changed'
+  settingsChanged: 'settings:changed',
+  winGetState: 'win:getState',
+  winState: 'win:state',
+  winSetPinned: 'win:setPinned',
+  winSetGhost: 'win:setGhost',
+  winSetOpacity: 'win:setOpacity',
+  winMinimize: 'win:minimize',
+  winClose: 'win:close',
+  winGhostHandle: 'win:ghostHandle',
+  hotkey: 'hotkey:action',
+  shortcutsStatus: 'shortcuts:status',
+  shortcutsGetStatus: 'shortcuts:getStatus'
 } as const
 
 export type EngineState =
@@ -74,3 +85,16 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   app: { trayHintShown: false }
 }
+
+/** Estado de la ventana flotante que muestra la interfaz. */
+export interface WinState {
+  pinned: boolean
+  ghost: boolean
+  opacity: number
+}
+
+/** Acciones de atajo que se resuelven en la interfaz (el resto las hace el proceso principal). */
+export type HotkeyAction = 'scrollUp' | 'scrollDown' | 'toggleAutoScroll'
+
+/** Atajos que el sistema no dejó registrar (ya los usa otra aplicación o son inválidos). */
+export type ShortcutStatus = { failed: ShortcutAction[] }

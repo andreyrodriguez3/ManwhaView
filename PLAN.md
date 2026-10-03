@@ -196,7 +196,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - Teclado: ↑/↓, Espacio/Shift+Espacio, AvPág/RePág, ←/→ (capítulo anterior o siguiente).
 - Barra del lector: título y capítulo, menú de capítulos, modo y auto-scroll. Se oculta sola mientras se lee.
 
-### [ ] Fase 7: Ventana flotante (lo más importante)
+### [x] Fase 7: Ventana flotante (lo más importante)
 - `BrowserWindow` con `frame: false`, `transparent: false`, redimensionable y `minWidth: 260`, `minHeight: 320`. Barra de título propia en React (`-webkit-app-region: drag`).
 - **Tamaño libre:** se arrastran bordes y esquinas. Se guardan los límites (posición y tamaño) al moverla o redimensionarla (con debounce).
   Al arrancar, si esos límites quedan fuera de los monitores conectados, la ventana se recoloca en el monitor principal.

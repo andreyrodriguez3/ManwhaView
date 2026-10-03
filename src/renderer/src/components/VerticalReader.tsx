@@ -232,6 +232,7 @@ export default function VerticalReader({
   const [ids, setIds] = useState<number[]>([startId])
   const autoScroll = useReaderStore((s) => s.autoScroll)
   const scrollCmd = useReaderStore((s) => s.scrollCmd)
+  const wheel = useReaderStore((s) => s.wheel)
   const speedRef = useRef(speed)
   useEffect(() => {
     speedRef.current = speed
@@ -290,6 +291,14 @@ export default function VerticalReader({
     lastCmd.current = scrollCmd.n
     root?.scrollBy({ top: scrollCmd.dir * root.clientHeight * 0.8, behavior: 'smooth' })
   }, [scrollCmd, root])
+
+  // Rueda recibida desde el asa del modo fantasma.
+  const lastWheel = useRef(wheel.n)
+  useEffect(() => {
+    if (wheel.n === lastWheel.current) return
+    lastWheel.current = wheel.n
+    root?.scrollBy({ top: wheel.dy })
+  }, [wheel, root])
 
   // Zoom con Ctrl + rueda (listener nativo: React registra la rueda como pasiva).
   useEffect(() => {

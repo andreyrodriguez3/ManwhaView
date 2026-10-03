@@ -1,4 +1,8 @@
 import { useEngine } from './hooks/useEngine'
+import { useHotkeys } from './hooks/useHotkeys'
+import GhostHandle from './components/GhostHandle'
+import TitleBar from './components/TitleBar'
+import { useWin } from './store/win'
 import { baseTab, useNav, type TabName, type View } from './store/nav'
 import Browse from './routes/Browse'
 import Extensions from './routes/Extensions'
@@ -43,35 +47,53 @@ function Screen({
   }
 }
 
+/** Marco de la ventana: barra de título propia, o el asa si está en modo fantasma. */
+function Shell({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const ghost = useWin((s) => s.ghost)
+  return (
+    <div className="frame">
+      {!ghost && <TitleBar />}
+      <div className="content">{children}</div>
+      {ghost && <GhostHandle />}
+    </div>
+  )
+}
+
 function App(): React.JSX.Element {
   const engine = useEngine()
   const { stack, view, tab, back } = useNav()
+  const ghost = useWin((s) => s.ghost)
+  useHotkeys()
 
   if (engine.status === 'starting') {
     return (
-      <div className="center">
-        <div className="spinner" />
-        <p>Iniciando motor…</p>
-      </div>
+      <Shell>
+        <div className="center">
+          <div className="spinner" />
+          <p>Iniciando motor…</p>
+        </div>
+      </Shell>
     )
   }
 
   if (engine.status === 'error') {
     return (
-      <div className="center">
-        <h2>No se pudo iniciar el motor</h2>
-        <p className="muted">{engine.message}</p>
-        <div className="row">
-          <button onClick={() => void window.api.engine.restart()}>Reintentar</button>
-          <button
-            className="secondary"
-            onClick={() => void window.api.showInFolder(engine.logPath)}
-          >
-            Ver registro
-          </button>
+      <Shell>
+        <div className="center">
+          <h2>No se pudo iniciar el motor</h2>
+          <p className="muted">{engine.message}</p>
+          <div className="row">
+            <button onClick={() => void window.api.engine.restart()}>Reintentar</button>
+            <button
+              className="secondary"
+              onClick={() => void window.api.showInFolder(engine.logPath)}
+            >
+              Ver registro
+            </button>
+          </div>
+          <p className="muted small">{engine.logPath}</p>
         </div>
-        <p className="muted small">{engine.logPath}</p>
-      </div>
+      </Shell>
     )
   }
 
@@ -84,31 +106,32 @@ function App(): React.JSX.Element {
   const active = baseTab(stack)
 
   return (
-    <div className="app">
-      {view.name !== 'reader' && (
-        <nav>
-          {stack.length > 1 && (
-            <button className="secondary" onClick={back} title="Volver">
-              ←
-            </button>
-          )}
-          <strong>📚 ManwhaView</strong>
-          {tabs.map(([id, label]) => (
-            <button
-              key={id}
-              className={active === id ? 'tab active' : 'tab'}
-              onClick={() => tab(id)}
-            >
-              {label}
-            </button>
-          ))}
-          <span className="muted small grow right">Motor {engine.version}</span>
-        </nav>
-      )}
-      <main>
-        <Screen view={view} engine={engine} />
-      </main>
-    </div>
+    <Shell>
+      <div className="app">
+        {view.name !== 'reader' && !ghost && (
+          <nav>
+            {stack.length > 1 && (
+              <button className="secondary" onClick={back} title="Volver">
+                ←
+              </button>
+            )}
+            {tabs.map(([id, label]) => (
+              <button
+                key={id}
+                className={active === id ? 'tab active' : 'tab'}
+                onClick={() => tab(id)}
+              >
+                {label}
+              </button>
+            ))}
+            <span className="muted small grow right">Motor {engine.version}</span>
+          </nav>
+        )}
+        <main>
+          <Screen view={view} engine={engine} />
+        </main>
+      </div>
+    </Shell>
   )
 }
 

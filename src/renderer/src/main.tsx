@@ -5,8 +5,10 @@ import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
 import { initSettings } from './store/settings'
+import { initWin } from './store/win'
 
 initSettings()
+initWin()
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } }

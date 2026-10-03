@@ -1,5 +1,19 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type EngineState, type GraphqlResponse, type Settings } from '../shared/ipc'
+import {
+  IPC,
+  type EngineState,
+  type GraphqlResponse,
+  type HotkeyAction,
+  type Settings,
+  type ShortcutStatus,
+  type WinState
+} from '../shared/ipc'
+
+const subscribe = <T>(channel: string, cb: (v: T) => void): (() => void) => {
+  const handler = (_: unknown, v: T): void => cb(v)
+  ipcRenderer.on(channel, handler)
+  return () => ipcRenderer.removeListener(channel, handler)
+}
 
 const api = {
   engine: {
@@ -22,6 +36,22 @@ const api = {
       ipcRenderer.on(IPC.settingsChanged, handler)
       return () => ipcRenderer.removeListener(IPC.settingsChanged, handler)
     }
+  },
+  win: {
+    getState: (): Promise<WinState> => ipcRenderer.invoke(IPC.winGetState),
+    onState: (cb: (s: WinState) => void): (() => void) => subscribe(IPC.winState, cb),
+    setPinned: (v: boolean): Promise<void> => ipcRenderer.invoke(IPC.winSetPinned, v),
+    setGhost: (v: boolean): Promise<void> => ipcRenderer.invoke(IPC.winSetGhost, v),
+    setOpacity: (v: number): Promise<void> => ipcRenderer.invoke(IPC.winSetOpacity, v),
+    minimize: (): Promise<void> => ipcRenderer.invoke(IPC.winMinimize),
+    close: (): Promise<void> => ipcRenderer.invoke(IPC.winClose),
+    /** El ratón entró/salió del asa del modo fantasma. */
+    ghostHandle: (inside: boolean): void => ipcRenderer.send(IPC.winGhostHandle, inside)
+  },
+  hotkeys: {
+    onAction: (cb: (a: HotkeyAction) => void): (() => void) => subscribe(IPC.hotkey, cb),
+    getStatus: (): Promise<ShortcutStatus> => ipcRenderer.invoke(IPC.shortcutsGetStatus),
+    onStatus: (cb: (s: ShortcutStatus) => void): (() => void) => subscribe(IPC.shortcutsStatus, cb)
   },
   showInFolder: (path: string): Promise<void> => ipcRenderer.invoke(IPC.openPath, path)
 }

@@ -31,6 +31,7 @@ export default function PagedReader({
   const [picked, setPicked] = useState<number | null>(null)
   const box = useRef<HTMLDivElement>(null)
   const scrollCmd = useReaderStore((s) => s.scrollCmd)
+  const wheel = useReaderStore((s) => s.wheel)
 
   const initial = chapter.isRead ? 0 : Math.min(chapter.lastPageRead, Math.max(total - 1, 0))
   const page = Math.min(picked ?? initial, Math.max(total - 1, 0))
@@ -67,6 +68,16 @@ export default function PagedReader({
     lastCmd.current = scrollCmd.n
     goRef.current(scrollCmd.dir)
   }, [scrollCmd])
+
+  // Rueda recibida desde el asa del modo fantasma: pasa de página (o desplaza si hay zoom).
+  const lastWheel = useRef(wheel.n)
+  useEffect(() => {
+    if (wheel.n === lastWheel.current) return
+    lastWheel.current = wheel.n
+    const el = box.current
+    if (el && el.scrollHeight > el.clientHeight + 1) el.scrollBy({ top: wheel.dy })
+    else goRef.current(wheel.dy > 0 ? 1 : -1)
+  }, [wheel])
 
   useEffect(() => {
     const el = box.current

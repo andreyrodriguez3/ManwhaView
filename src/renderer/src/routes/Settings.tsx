@@ -8,6 +8,8 @@ import {
   RemoveExtensionStoreDocument
 } from '../api/gql/graphql'
 import { DEFAULT_EXTENSION_STORE } from '../../../shared/ipc'
+import ShortcutSettings from '../components/ShortcutSettings'
+import { patchSettings, useSettings } from '../store/settings'
 
 export default function Settings({
   logPath,
@@ -17,6 +19,7 @@ export default function Settings({
   version: string
 }): React.JSX.Element {
   const qc = useQueryClient()
+  const ghostOpacity = useSettings((s) => s.settings.window.ghostOpacity)
   const [url, setUrl] = useState(DEFAULT_EXTENSION_STORE)
   const stores = useQuery({ queryKey: ['stores'], queryFn: () => gql(ExtensionStoresDocument) })
 
@@ -69,6 +72,22 @@ export default function Settings({
           <li className="muted small">Todavía no hay repositorios.</li>
         )}
       </ul>
+
+      <h3>Ventana</h3>
+      <div className="shortcut-row">
+        <span className="label">Opacidad en modo fantasma</span>
+        <input
+          type="range"
+          min={20}
+          max={100}
+          step={5}
+          value={Math.round(ghostOpacity * 100)}
+          onChange={(e) => patchSettings('window', { ghostOpacity: Number(e.target.value) / 100 })}
+        />
+        <span className="muted small">{Math.round(ghostOpacity * 100)} %</span>
+      </div>
+
+      <ShortcutSettings />
 
       <h3>Motor</h3>
       <p className="muted small">Suwayomi-Server {version}</p>

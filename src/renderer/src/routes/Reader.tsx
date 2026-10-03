@@ -12,6 +12,7 @@ import VerticalReader from '../components/VerticalReader'
 import { useNav } from '../store/nav'
 import { useReaderStore } from '../store/reader'
 import { patchSettings, useSettings } from '../store/settings'
+import { useWin } from '../store/win'
 
 const HIDE_BAR_MS = 2500
 
@@ -27,6 +28,7 @@ export default function Reader({
   const reader = useSettings((s) => s.settings.reader)
   const mode: ReaderMode = reader.modes[String(mangaId)] ?? 'vertical'
   const autoScroll = useReaderStore((s) => s.autoScroll)
+  const ghost = useWin((s) => s.ghost)
 
   const manga = useQuery({
     queryKey: ['manga', mangaId],
@@ -147,7 +149,7 @@ export default function Reader({
   return (
     <div className="reader" onMouseMove={poke} onTouchStart={poke}>
       <div
-        className={barVisible ? 'reader-bar' : 'reader-bar hidden'}
+        className={barVisible && !ghost ? 'reader-bar' : 'reader-bar hidden'}
         onMouseEnter={() => {
           hovering.current = true
           setBarVisible(true)
