@@ -4,6 +4,7 @@ import { gql } from '../api/client'
 import {
   MangaChaptersDocument,
   MangaDetailDocument,
+  TrackProgressDocument,
   UpdateChapterDocument
 } from '../api/gql/graphql'
 import type { ReaderMode } from '../../../shared/ipc'
@@ -56,8 +57,12 @@ export default function Reader({
 
   // --- Progreso: se guarda la última página (con debounce) y se marca como leído al final. ---
   const save = useMutation({
-    mutationFn: (v: { id: number; patch: { lastPageRead?: number; isRead?: boolean } }) =>
-      gql(UpdateChapterDocument, v)
+    mutationFn: async (v: { id: number; patch: { lastPageRead?: number; isRead?: boolean } }) => {
+      const r = await gql(UpdateChapterDocument, v)
+      // Al terminar un capítulo se sincroniza el seguimiento (AniList/MAL) si hay cuentas vinculadas.
+      if (v.patch.isRead) await gql(TrackProgressDocument, { mangaId }).catch(() => undefined)
+      return r
+    }
   })
   const { mutate: saveChapter } = save
   const pending = useRef<{ id: number; page: number } | null>(null)
@@ -141,6 +146,16 @@ export default function Reader({
   }, [poke])
   useEffect(() => () => useReaderStore.getState().setAutoScroll(false), [])
 
+  // Esc vuelve al detalle de la obra.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape' && !(e.target as HTMLElement).closest('input, select, textarea'))
+        back()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [back])
+
   const setMode = (m: ReaderMode): void =>
     patchSettings('reader', { modes: { ...reader.modes, [String(mangaId)]: m } })
 
@@ -159,79 +174,83 @@ export default function Reader({
           poke()
         }}
       >
-        <button className="secondary" onClick={back} title="Volver al detalle">
-          ←
-        </button>
-        <div className="grow reader-title">
-          <strong>{manga.data?.title ?? '…'}</strong>
-          <div className="muted small">{active?.name ?? ''}</div>
+        <div className="rb-row">
+          <button className="secondary" onClick={back} title="Volver al detalle">
+            ←
+          </button>
+          <div className="grow reader-title">
+            <strong>{manga.data?.title ?? '…'}</strong>
+            <div className="muted small">{active?.name ?? ''}</div>
+          </div>
         </div>
-        <button
-          className="secondary"
-          disabled={idx <= 0}
-          onClick={() => stepChapter(-1)}
-          title="Capítulo anterior (←)"
-        >
-          ‹
-        </button>
-        <select
-          value={activeId}
-          onChange={(e) => {
-            flush()
-            replace({ name: 'reader', mangaId, chapterId: Number(e.target.value) })
-          }}
-          title="Capítulos"
-        >
-          {[...order].reverse().map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-              {c.isRead ? ' ✓' : ''}
-            </option>
-          ))}
-        </select>
-        <button
-          className="secondary"
-          disabled={idx < 0 || idx >= order.length - 1}
-          onClick={() => stepChapter(1)}
-          title="Capítulo siguiente (→)"
-        >
-          ›
-        </button>
-        <select value={mode} onChange={(e) => setMode(e.target.value as ReaderMode)} title="Modo">
-          <option value="vertical">Vertical continuo</option>
-          <option value="ltr">Paginado → (izq. a der.)</option>
-          <option value="rtl">Paginado ← (der. a izq.)</option>
-        </select>
-        <button
-          className={autoScroll ? '' : 'secondary'}
-          disabled={mode !== 'vertical'}
-          onClick={() => useReaderStore.getState().toggleAutoScroll()}
-          title="Auto-scroll"
-        >
-          {autoScroll ? '⏸' : '▶'}
-        </button>
-        <input
-          type="range"
-          min={20}
-          max={600}
-          step={10}
-          value={reader.speed}
-          onChange={(e) => patchSettings('reader', { speed: Number(e.target.value) })}
-          title={`Velocidad: ${reader.speed} px/s`}
-        />
-        <select
-          value={reader.widthPct}
-          onChange={(e) => patchSettings('reader', { widthPct: Number(e.target.value) })}
-          title="Ancho (Ctrl + rueda)"
-        >
-          {[...new Set([30, 50, 70, 100, 120, 150, 200, 300, reader.widthPct])]
-            .sort((a, b) => a - b)
-            .map((w) => (
-              <option key={w} value={w}>
-                {w === 100 ? 'Ajustar a la ventana' : `${w}%`}
+        <div className="rb-row">
+          <button
+            className="secondary"
+            disabled={idx <= 0}
+            onClick={() => stepChapter(-1)}
+            title="Capítulo anterior (←)"
+          >
+            ‹
+          </button>
+          <select
+            value={activeId}
+            onChange={(e) => {
+              flush()
+              replace({ name: 'reader', mangaId, chapterId: Number(e.target.value) })
+            }}
+            title="Capítulos"
+          >
+            {[...order].reverse().map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+                {c.isRead ? ' ✓' : ''}
               </option>
             ))}
-        </select>
+          </select>
+          <button
+            className="secondary"
+            disabled={idx < 0 || idx >= order.length - 1}
+            onClick={() => stepChapter(1)}
+            title="Capítulo siguiente (→)"
+          >
+            ›
+          </button>
+          <select value={mode} onChange={(e) => setMode(e.target.value as ReaderMode)} title="Modo">
+            <option value="vertical">Vertical continuo</option>
+            <option value="ltr">Paginado → (izq. a der.)</option>
+            <option value="rtl">Paginado ← (der. a izq.)</option>
+          </select>
+          <button
+            className={autoScroll ? '' : 'secondary'}
+            disabled={mode !== 'vertical'}
+            onClick={() => useReaderStore.getState().toggleAutoScroll()}
+            title="Auto-scroll"
+          >
+            {autoScroll ? '⏸' : '▶'}
+          </button>
+          <input
+            type="range"
+            min={20}
+            max={600}
+            step={10}
+            value={reader.speed}
+            onChange={(e) => patchSettings('reader', { speed: Number(e.target.value) })}
+            title={`Velocidad: ${reader.speed} px/s`}
+          />
+          <select
+            value={reader.widthPct}
+            onChange={(e) => patchSettings('reader', { widthPct: Number(e.target.value) })}
+            title="Ancho (Ctrl + rueda)"
+          >
+            {[...new Set([30, 50, 70, 100, 120, 150, 200, 300, reader.widthPct])]
+              .sort((a, b) => a - b)
+              .map((w) => (
+                <option key={w} value={w}>
+                  {w === 100 ? 'Ajustar a la ventana' : `${w}%`}
+                </option>
+              ))}
+          </select>
+        </div>
       </div>
 
       {!fresh && !chapters.error && <p className="muted center-text pad">Cargando…</p>}

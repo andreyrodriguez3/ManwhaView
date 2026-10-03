@@ -1,5 +1,6 @@
 import { useEngine } from './hooks/useEngine'
 import { useHotkeys } from './hooks/useHotkeys'
+import ErrorBoundary from './components/ErrorBoundary'
 import GhostHandle from './components/GhostHandle'
 import TitleBar from './components/TitleBar'
 import { useWin } from './store/win'
@@ -128,7 +129,9 @@ function App(): React.JSX.Element {
           </nav>
         )}
         <main>
-          <Screen view={view} engine={engine} />
+          <ErrorBoundary key={view.name}>
+            <Screen view={view} engine={engine} />
+          </ErrorBoundary>
         </main>
       </div>
     </Shell>

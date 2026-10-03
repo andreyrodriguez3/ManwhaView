@@ -10,6 +10,7 @@ import {
 import { DEFAULT_EXTENSION_STORE } from '../../../shared/ipc'
 import BackupSettings from '../components/BackupSettings'
 import ShortcutSettings from '../components/ShortcutSettings'
+import TrackerSettings from '../components/TrackerSettings'
 import { patchSettings, useSettings } from '../store/settings'
 
 export default function Settings({
@@ -77,6 +78,8 @@ export default function Settings({
           <li className="muted small">Todavía no hay repositorios.</li>
         )}
       </ul>
+
+      <TrackerSettings />
 
       <BackupSettings />
 

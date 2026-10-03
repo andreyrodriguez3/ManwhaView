@@ -17,9 +17,16 @@ Estado: v0.1 completa (fases 0-10 de `PLAN.md`).
 - **📌 Fijar:** la ventana queda siempre encima y no se puede minimizar.
 - **👻 Modo fantasma:** los clics atraviesan la ventana. Para volver: `Ctrl+Alt+G`, o la franja morada del borde derecho
   (ahí la rueda sigue haciendo scroll), o el menú de la bandeja.
+- **Esc** en el lector vuelve a la ficha de la obra.
 - **✕** esconde la app en la bandeja; **Salir** (bandeja o Ajustes) la cierra del todo, motor incluido.
 - Atajos globales (configurables en Ajustes): `Ctrl+Alt+M` mostrar/ocultar, `G` fantasma, `P` fijar,
   `↑`/`↓` scroll, `Espacio` auto-scroll. Si otra aplicación ya usa uno, Ajustes lo avisa y puedes cambiarlo.
+
+## Seguimiento (AniList, MyAnimeList…)
+
+Ajustes → Seguimiento → **Iniciar sesión**: se abre tu navegador para autorizar y luego pegas aquí la URL a la que te
+redirige. Después, en la ficha de cada obra, **Vincular** la busca en el servicio; al terminar un capítulo el progreso se
+sincroniza solo. Servicios con usuario y contraseña (Kitsu) aún no están soportados. **No probado con una cuenta real.**
 
 ## Copias de seguridad Mihon ↔ PC
 

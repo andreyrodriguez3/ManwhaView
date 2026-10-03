@@ -2,13 +2,17 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { gql, serverAsset } from '../api/client'
 import { SourcesDocument } from '../api/gql/graphql'
+import { LANGS, type Lang } from '../lib/lang'
 import { useNav } from '../store/nav'
 
 export default function Browse(): React.JSX.Element {
   const go = useNav((s) => s.go)
   const [text, setText] = useState('')
+  const [lang, setLang] = useState<Lang>('es-en')
   const sources = useQuery({ queryKey: ['sources'], queryFn: () => gql(SourcesDocument) })
-  const nodes = (sources.data?.sources.nodes ?? []).filter((s) => s.id !== '0')
+  const nodes = (sources.data?.sources.nodes ?? []).filter(
+    (s) => s.id !== '0' && LANGS[lang].match(s.lang)
+  )
 
   return (
     <div className="pad">
@@ -29,7 +33,18 @@ export default function Browse(): React.JSX.Element {
         </button>
       </form>
 
-      <h3>Fuentes instaladas</h3>
+      <div className="toolbar">
+        <h3 style={{ margin: 0 }} className="grow">
+          Fuentes instaladas
+        </h3>
+        <select value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
+          {Object.entries(LANGS).map(([k, v]) => (
+            <option key={k} value={k}>
+              {v.label}
+            </option>
+          ))}
+        </select>
+      </div>
       {sources.error && <p className="error">{(sources.error as Error).message}</p>}
       {sources.isLoading && <p className="muted">Cargando…</p>}
       {sources.data && nodes.length === 0 && (

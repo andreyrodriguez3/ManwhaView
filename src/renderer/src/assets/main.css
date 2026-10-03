@@ -501,3 +501,59 @@ button.icon.close:hover {
 .shortcut-row input[type='checkbox'] {
   width: auto;
 }
+.reader-bar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.3rem;
+}
+.rb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+@media (max-width: 560px) {
+  .reader-bar {
+    padding: 0.25rem 0.35rem;
+    font-size: 12px;
+  }
+  .reader-bar button,
+  .reader-bar select {
+    padding: 0.25rem 0.4rem;
+  }
+  .reader-bar select {
+    max-width: 6.2rem;
+  }
+  .reader-bar input[type='range'] {
+    width: 56px;
+  }
+  nav {
+    gap: 0.2rem;
+    padding: 0.3rem 0.4rem;
+  }
+  nav .tab {
+    padding: 0.3rem 0.5rem;
+  }
+  .pad {
+    padding: 0.6rem;
+  }
+}
+@media (max-width: 380px) {
+  .titlebar-title {
+    display: none;
+  }
+  .titlebar {
+    justify-content: flex-end;
+  }
+  .titlebar-controls input[type='range'] {
+    width: 48px;
+  }
+  button.icon {
+    padding: 0 0.45rem;
+  }
+}
+.reader-bar select,
+.reader-bar button {
+  font-size: 12px;
+}

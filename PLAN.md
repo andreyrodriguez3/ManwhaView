@@ -255,6 +255,10 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
 - **Modo fantasma:** es la parte más delicada. Hay que probarlo de verdad en Windows con varios programas detrás.
 - **Contenido:** la app no incluye ni distribuye extensiones ni contenido. El usuario configura su propio repo de extensiones.
 
+## Mejoras posteriores a la v1 (hechas)
+Seguimiento AniList/MAL/etc. (Ajustes + ficha + sincronización al terminar capítulo) · aviso si el motor se detiene ·
+filtro de idioma en Explorar · barra del lector compacta en ventanas estrechas · Esc vuelve a la ficha.
+
 ## Ideas para después de la v1
-Notificaciones de capítulos nuevos · descargas offline · sincronización con AniList/MAL · FlareSolverr ·
+Notificaciones de capítulos nuevos · descargas offline · FlareSolverr/CEF · login de Kitsu (usuario y contraseña) ·
 temas de color · estadísticas de lectura.

@@ -10,6 +10,7 @@ import {
   type ChapterFieldsFragment,
   type MangaStatus
 } from '../api/gql/graphql'
+import TrackingPanel from '../components/TrackingPanel'
 import { useNav } from '../store/nav'
 
 const STATUS: Record<MangaStatus, string> = {
@@ -138,6 +139,8 @@ export default function Manga({ mangaId }: { mangaId: number }): React.JSX.Eleme
       </div>
 
       {m.description && <p className="desc">{m.description}</p>}
+
+      <TrackingPanel mangaId={mangaId} title={m.title} />
 
       <div className="toolbar" style={{ marginTop: '1rem' }}>
         <h3 style={{ margin: 0 }} className="grow">

@@ -112,7 +112,11 @@ export async function startEngine(): Promise<void> {
       proc.once('exit', (code) => {
         if (child === proc) {
           child = null
-          if (state.status !== 'ready') fail(`El motor se cerró al arrancar (código ${code})`)
+          fail(
+            state.status === 'ready'
+              ? `El motor se detuvo inesperadamente (código ${code}). Pulsa Reintentar.`
+              : `El motor se cerró al arrancar (código ${code})`
+          )
         }
       })
     }
