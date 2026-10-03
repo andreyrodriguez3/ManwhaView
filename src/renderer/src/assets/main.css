@@ -186,3 +186,117 @@ main {
   padding: 0 0.4rem;
   border-radius: 6px;
 }
+.clickable {
+  cursor: pointer;
+}
+.center-text {
+  text-align: center;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+@media (max-width: 420px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.hrow {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.hrow .card {
+  flex: 0 0 120px;
+}
+.card {
+  cursor: pointer;
+  min-width: 0;
+}
+.cover {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  background: #0003;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.no-cover {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.tag,
+.unread {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 0 0.4rem;
+  border-radius: 6px;
+}
+.unread {
+  left: auto;
+  right: 4px;
+  font-size: 0.75rem;
+}
+.continue {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  display: none;
+  padding: 0.3rem;
+  font-size: 0.8rem;
+}
+.card:hover .continue {
+  display: block;
+}
+.card-title {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.result-row h3 {
+  margin-bottom: 0.3rem;
+}
+.picker {
+  margin-bottom: 0.75rem;
+}
+.detail {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.detail-cover {
+  width: 150px;
+  border-radius: 10px;
+  align-self: flex-start;
+}
+.genres {
+  margin-top: 0.4rem;
+}
+.desc {
+  white-space: pre-line;
+  color: var(--muted);
+  max-height: 9rem;
+  overflow: auto;
+}
+.chapter.read {
+  opacity: 0.55;
+}

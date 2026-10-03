@@ -1,0 +1,110 @@
+fragment MangaCard on MangaType {
+  id
+  title
+  thumbnailUrl
+  inLibrary
+  sourceId
+  unreadCount
+}
+
+fragment ChapterFields on ChapterType {
+  id
+  name
+  chapterNumber
+  scanlator
+  uploadDate
+  isRead
+  lastPageRead
+  pageCount
+  sourceOrder
+  mangaId
+}
+
+fragment MangaDetails on MangaType {
+  id
+  title
+  thumbnailUrl
+  author
+  artist
+  status
+  genre
+  description
+  inLibrary
+  realUrl
+  sourceId
+  unreadCount
+  source {
+    displayName
+  }
+  categories {
+    nodes {
+      id
+    }
+  }
+}
+
+mutation FetchSourceManga(
+  $source: LongString!
+  $type: FetchSourceMangaType!
+  $page: Int!
+  $query: String
+) {
+  fetchSourceManga(input: { source: $source, type: $type, page: $page, query: $query }) {
+    hasNextPage
+    mangas {
+      ...MangaCard
+    }
+  }
+}
+
+query MangaDetail($id: Int!) {
+  manga(id: $id) {
+    ...MangaDetails
+    firstUnreadChapter {
+      ...ChapterFields
+    }
+  }
+}
+
+query MangaChapters($mangaId: Int!) {
+  chapters(condition: { mangaId: $mangaId }, order: [{ by: SOURCE_ORDER, byType: ASC }]) {
+    nodes {
+      ...ChapterFields
+    }
+  }
+}
+
+mutation FetchMangaAndChapters($id: Int!) {
+  fetchMangaAndChapters(input: { id: $id, fetchManga: true, fetchChapters: true }) {
+    manga {
+      ...MangaDetails
+    }
+    chapters {
+      ...ChapterFields
+    }
+  }
+}
+
+mutation SetInLibrary($id: Int!, $inLibrary: Boolean!) {
+  updateManga(input: { id: $id, patch: { inLibrary: $inLibrary } }) {
+    manga {
+      ...MangaDetails
+    }
+  }
+}
+
+mutation UpdateChapter($id: Int!, $patch: UpdateChapterPatchInput!) {
+  updateChapter(input: { id: $id, patch: $patch }) {
+    chapter {
+      ...ChapterFields
+    }
+  }
+}
+
+mutation UpdateChapters($ids: [Int!]!, $patch: UpdateChapterPatchInput!) {
+  updateChapters(input: { ids: $ids, patch: $patch }) {
+    chapters {
+      ...ChapterFields
+    }
+  }
+}

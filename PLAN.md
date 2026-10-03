@@ -164,7 +164,7 @@ Todo acceso al sistema pasa por el preload. El servidor solo escucha en `127.0.0
   - Botones Instalar, Actualizar y Desinstalar, con icono y versión de cada una.
 - **Listo cuando:** se pueden instalar Olympus Scans, ManhwaWeb y Webtoons, y aparecen sus fuentes.
 
-### [ ] Fase 4: Explorar y búsqueda global
+### [x] Fase 4: Explorar y búsqueda global
 - **Explorar:** lista de fuentes instaladas, con Populares, Recientes y Buscar dentro de cada una (scroll infinito).
 - **Búsqueda global:**
   - Un buscador que consulta todas las fuentes marcadas (por defecto las instaladas en es/en), como mucho 3 a la vez.
